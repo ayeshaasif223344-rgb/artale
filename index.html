@@ -1,1 +1,430 @@
+<!DOCTYPE html>
 
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <title>TaleCode UK — AR Experience</title>
+
+  <!-- MindAR + A-Frame libraries -->
+
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#000; font-family: Georgia, serif; overflow: hidden; }
+
+    /* ── LOADING SCREEN ── */
+    #loading {
+      position:fixed; inset:0; z-index:9999;
+      background: linear-gradient(160deg,#0d1b3e,#1a0a0a);
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      text-align:center; padding:30px;
+    }
+    #loading .icon { font-size:60px; margin-bottom:16px; animation: float 2s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+    #loading h2 { color:#c8a951; font-size:22px; letter-spacing:2px; margin-bottom:8px; }
+    #loading p  { color:#aaa; font-size:14px; margin-bottom:30px; }
+    .spinner {
+      width:40px; height:40px; border:3px solid rgba(200,169,81,0.2);
+      border-top-color:#c8a951; border-radius:50%;
+      animation: spin 1s linear infinite; margin-bottom:16px;
+    }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    #loading small { color:#666; font-size:12px; }
+
+    /* ── INSTRUCTION OVERLAY ── */
+    #instruction {
+      position:fixed; bottom:0; left:0; right:0; z-index:100;
+      background: linear-gradient(transparent, rgba(0,0,0,0.85));
+      padding:20px 24px 32px; text-align:center;
+      pointer-events:none;
+    }
+    #instruction p {
+      color:#c8a951; font-size:15px; letter-spacing:1px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:0.6} 50%{opacity:1} }
+
+    /* ── SCENE LABEL ── */
+    #scene-label {
+      position:fixed; top:20px; left:50%; transform:translateX(-50%);
+      z-index:100; background:rgba(13,27,62,0.8);
+      border:1px solid rgba(200,169,81,0.4);
+      border-radius:20px; padding:8px 20px;
+      color:#c8a951; font-size:13px; letter-spacing:2px;
+      display:none;
+    }
+
+    /* ── CLOSE BTN ── */
+    #close-btn {
+      position:fixed; top:16px; right:16px; z-index:200;
+      background:rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.2);
+      color:#fff; width:40px; height:40px; border-radius:50%;
+      font-size:18px; cursor:pointer; display:none;
+      align-items:center; justify-content:center;
+    }
+  </style>
+
+</head>
+<body>
+
+<!-- Loading -->
+
+<div id="loading">
+  <div class="icon">🏰</div>
+  <h2>TaleCode UK</h2>
+  <p>Edinburgh Castle AR Experience</p>
+  <div class="spinner"></div>
+  <small>Starting camera...</small>
+</div>
+
+<!-- Close button -->
+
+<button id="close-btn" onclick="window.location.href='../talecode-story/'">✕</button>
+
+<!-- Scene label -->
+
+<div id="scene-label" id="scene-label">Chapter 1 of 5</div>
+
+<!-- Instruction -->
+
+<div id="instruction">
+  <p>📱 Point camera at your TaleCode tin to begin</p>
+</div>
+
+<!-- ══ A-FRAME AR SCENE ══ -->
+
+<a-scene
+mindar-image=“imageTargetSrc: ./targets.mind; autoStart: true; uiLoading: no; uiError: no; uiScanning: no;”
+color-space=“sRGB”
+renderer=“colorManagement: true, physicallyCorrectLights”
+vr-mode-ui=“enabled: false”
+device-orientation-permission-ui=“enabled: false”
+
+  <a-assets>
+    <!-- Preload fonts -->
+  </a-assets>
+
+<a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
+
+  <!-- ═══════════════════════════════════════ -->
+
+  <!--  TARGET 0  —  SCENE 1: Sacred Stone    -->
+
+  <!-- ═══════════════════════════════════════ -->
+
+  <a-entity mindar-image-target="targetIndex: 0">
+
+```
+<!-- Glowing base ring -->
+<a-ring
+  color="#c8a951" radius-inner="0.12" radius-outer="0.14"
+  rotation="-90 0 0" position="0 0 0"
+  animation="property: rotation; to: -90 360 0; dur: 8000; easing: linear; loop: true">
+</a-ring>
+
+<!-- Castle emoji floating -->
+<a-text
+  value="🏰" align="center" width="1.2"
+  position="0 0.35 0"
+  animation="property: position; to: 0 0.45 0; dur: 1500; dir: alternate; easing: easeInOutSine; loop: true">
+</a-text>
+
+<!-- Chapter 1 Title -->
+<a-text
+  value="THE SACRED STONE"
+  align="center" color="#c8a951"
+  width="1.8" position="0 0.15 0"
+  font="https://cdn.aframe.io/fonts/KelsonSans.fnt">
+</a-text>
+
+<!-- Chapter 1 Subtitle -->
+<a-text
+  value="843 AD — 500 years of Scottish Kings"
+  align="center" color="#ffffff"
+  width="1.4" position="0 0.0 0"
+  font="https://cdn.aframe.io/fonts/KelsonSans.fnt">
+</a-text>
+
+<!-- Story line -->
+<a-text
+  value="Every King of Scotland\ncrowned upon this stone."
+  align="center" color="#dddddd"
+  width="1.3" position="0 -0.15 0"
+  font="https://cdn.aframe.io/fonts/KelsonSans.fnt">
+</a-text>
+
+<!-- Decorative particles — floating dots -->
+<a-sphere color="#c8a951" radius="0.015" position="-0.25 0.3 0"
+  animation="property: position; to: -0.25 0.4 0; dur: 2000; dir: alternate; easing: easeInOutSine; loop: true; delay: 200">
+</a-sphere>
+<a-sphere color="#c8a951" radius="0.01" position="0.28 0.25 0"
+  animation="property: position; to: 0.28 0.38 0; dur: 1800; dir: alternate; easing: easeInOutSine; loop: true; delay: 500">
+</a-sphere>
+<a-sphere color="#ffffff" radius="0.008" position="0.15 0.35 0"
+  animation="property: position; to: 0.15 0.5 0; dur: 2200; dir: alternate; easing: easeInOutSine; loop: true; delay: 100">
+</a-sphere>
+
+<!-- Background card -->
+<a-plane
+  color="#0d1b3e" opacity="0.75" width="0.75" height="0.5"
+  position="0 0.0 -0.01">
+</a-plane>
+```
+
+  </a-entity>
+
+  <!-- ═══════════════════════════════════════ -->
+
+  <!--  TARGET 1  —  SCENE 2: The Theft       -->
+
+  <!-- ═══════════════════════════════════════ -->
+
+  <a-entity mindar-image-target="targetIndex: 1">
+
+```
+<!-- Red warning ring — danger/theft theme -->
+<a-ring
+  color="#cc2200" radius-inner="0.12" radius-outer="0.14"
+  rotation="-90 0 0" position="0 0 0"
+  animation="property: rotation; to: -90 360 0; dur: 6000; easing: linear; loop: true">
+</a-ring>
+
+<a-text value="⚔️" align="center" width="1.2" position="0 0.35 0"
+  animation="property: position; to: 0 0.45 0; dur: 1200; dir: alternate; easing: easeInOutSine; loop: true">
+</a-text>
+
+<a-text value="THE THEFT" align="center" color="#ff4444"
+  width="1.8" position="0 0.15 0"
+  font="https://cdn.aframe.io/fonts/KelsonSans.fnt">
+</a-text>
+
+<a-text value="1296 — Edward I, The Hammer of Scots"
+  align="center" color="#ffffff"
+  width="1.4" position="0 0.0 0"
+  font="https://cdn.aframe.io/fonts/KelsonSans.fnt">
+</a-text>
+
+<a-text value="Stolen. Carried to London.\n700 years of silence."
+  align="center" color="#dddddd"
+  width="1.3" position="0 -0.15 0"
+  font="https://cdn.aframe.io/fonts/KelsonSans.fnt">
+</a-text>
+
+<a-plane color="#1a0000" opacity="0.75" width="0.75" height="0.5" position="0 0.0 -0.01"></a-plane>
+
+<!-- Red danger sparks -->
+<a-sphere color="#ff4444" radius="0.012" position="-0.2 0.3 0"
+  animation="property: position; to: -0.2 0.42 0; dur: 900; dir: alternate; easing: easeInOutSine; loop: true">
+</a-sphere>
+<a-sphere color="#ff8800" radius="0.009" position="0.22 0.28 0"
+  animation="property: position; to: 0.22 0.4 0; dur: 1100; dir: alternate; easing: easeInOutSine; loop: true; delay: 300">
+</a-sphere>
+```
+
+  </a-entity>
+
+  <!-- ════════════════════════════════════════════ -->
+
+  <!--  TARGET 2  —  SCENE 3: Student Rebellion    -->
+
+  <!-- ════════════════════════════════════════════ -->
+
+  <a-entity mindar-image-target="targetIndex: 2">
+
+```
+<a-ring color="#4488ff" radius-inner="0.12" radius-outer="0.14"
+  rotation="-90 0 0" position="0 0 0"
+  animation="property: rotation; to: -90 -360 0; dur: 7000; easing: linear; loop: true">
+</a-ring>
+
+<a-text value="🎓" align="center" width="1.2" position="0 0.35 0"
+  animation="property: position; to: 0 0.45 0; dur: 1600; dir: alternate; easing: easeInOutSine; loop: true">
+</a-text>
+
+<a-text value="THE REBELLION" align="center" color="#4499ff"
+  width="1.8" position="0 0.15 0"
+  font="https://cdn.aframe.io/fonts/KelsonSans.fnt">
+</a-text>
+
+<a-text value="Christmas Night, 1950"
+  align="center" color="#ffffff"
+  width="1.4" position="0 0.0 0"
+  font="https://cdn.aframe.io/fonts/KelsonSans.fnt">
+</a-text>
+
+<a-text value="4 students broke into\nWestminster Abbey."
+  align="center" color="#dddddd"
+  width="1.3" position="0 -0.15 0"
+  font="https://cdn.aframe.io/fonts/KelsonSans.fnt">
+</a-text>
+
+<a-plane color="#00051a" opacity="0.75" width="0.75" height="0.5" position="0 0.0 -0.01"></a-plane>
+
+<a-sphere color="#4488ff" radius="0.012" position="-0.23 0.32 0"
+  animation="property: position; to: -0.23 0.44 0; dur: 1400; dir: alternate; easing: easeInOutSine; loop: true; delay: 0">
+</a-sphere>
+<a-sphere color="#aaddff" radius="0.008" position="0.25 0.27 0"
+  animation="property: position; to: 0.25 0.39 0; dur: 1700; dir: alternate; easing: easeInOutSine; loop: true; delay: 400">
+</a-sphere>
+```
+
+  </a-entity>
+
+  <!-- ════════════════════════════════════════ -->
+
+  <!--  TARGET 3  —  SCENE 4: Coming Home      -->
+
+  <!-- ════════════════════════════════════════ -->
+
+  <a-entity mindar-image-target="targetIndex: 3">
+
+```
+<a-ring color="#00cc66" radius-inner="0.12" radius-outer="0.14"
+  rotation="-90 0 0" position="0 0 0"
+  animation="property: rotation; to: -90 360 0; dur: 5000; easing: linear; loop: true">
+</a-ring>
+
+<a-text value="🏴󠁧󠁢󠁳󠁣󠁴󠁿" align="center" width="1.2" position="0 0.35 0"
+  animation="property: position; to: 0 0.48 0; dur: 2000; dir: alternate; easing: easeInOutSine; loop: true">
+</a-text>
+
+<a-text value="COMING HOME" align="center" color="#00ee77"
+  width="1.8" position="0 0.15 0"
+  font="https://cdn.aframe.io/fonts/KelsonSans.fnt">
+</a-text>
+
+<a-text value="November 1996 — After 700 years"
+  align="center" color="#ffffff"
+  width="1.4" position="0 0.0 0"
+  font="https://cdn.aframe.io/fonts/KelsonSans.fnt">
+</a-text>
+
+<a-text value="Scotland exhaled.\nThe stone came home."
+  align="center" color="#dddddd"
+  width="1.3" position="0 -0.15 0"
+  font="https://cdn.aframe.io/fonts/KelsonSans.fnt">
+</a-text>
+
+<a-plane color="#001a0a" opacity="0.75" width="0.75" height="0.5" position="0 0.0 -0.01"></a-plane>
+
+<a-sphere color="#00ee77" radius="0.012" position="-0.24 0.31 0"
+  animation="property: position; to: -0.24 0.43 0; dur: 1900; dir: alternate; easing: easeInOutSine; loop: true">
+</a-sphere>
+<a-sphere color="#aaffcc" radius="0.009" position="0.26 0.29 0"
+  animation="property: position; to: 0.26 0.41 0; dur: 2100; dir: alternate; easing: easeInOutSine; loop: true; delay: 600">
+</a-sphere>
+```
+
+  </a-entity>
+
+  <!-- ════════════════════════════════════════ -->
+
+  <!--  TARGET 4  —  SCENE 5: Your Reward      -->
+
+  <!-- ════════════════════════════════════════ -->
+
+  <a-entity mindar-image-target="targetIndex: 4">
+
+```
+<!-- Rainbow spinning ring — celebration -->
+<a-ring color="#c8a951" radius-inner="0.13" radius-outer="0.16"
+  rotation="-90 0 0" position="0 0 0"
+  animation="property: rotation; to: -90 360 0; dur: 3000; easing: linear; loop: true">
+</a-ring>
+<a-ring color="#ffffff" radius-inner="0.11" radius-outer="0.125"
+  rotation="-90 0 0" position="0 0 0"
+  animation="property: rotation; to: -90 -360 0; dur: 4000; easing: linear; loop: true">
+</a-ring>
+
+<a-text value="🎁" align="center" width="1.4" position="0 0.42 0"
+  animation="property: position; to: 0 0.52 0; dur: 1000; dir: alternate; easing: easeInOutSine; loop: true"
+  animation__rotate="property: rotation; to: 0 360 0; dur: 4000; easing: linear; loop: true">
+</a-text>
+
+<a-text value="YOUR REWARD!" align="center" color="#c8a951"
+  width="1.8" position="0 0.20 0"
+  font="https://cdn.aframe.io/fonts/KelsonSans.fnt">
+</a-text>
+
+<a-text value="USE CODE AT CHECKOUT:"
+  align="center" color="#aaaaaa"
+  width="1.3" position="0 0.06 0"
+  font="https://cdn.aframe.io/fonts/KelsonSans.fnt">
+</a-text>
+
+<!-- Big discount code -->
+<a-text value="DESTINY15"
+  align="center" color="#ffffff"
+  width="2.2" position="0 -0.08 0"
+  font="https://cdn.aframe.io/fonts/KelsonSans.fnt">
+</a-text>
+
+<a-text value="15% off your next TaleCode kit!"
+  align="center" color="#c8a951"
+  width="1.3" position="0 -0.22 0"
+  font="https://cdn.aframe.io/fonts/KelsonSans.fnt">
+</a-text>
+
+<a-plane color="#0a0d00" opacity="0.8" width="0.85" height="0.65" position="0 -0.02 -0.01"></a-plane>
+
+<!-- Celebration particles -->
+<a-sphere color="#c8a951" radius="0.015" position="-0.3 0.35 0"
+  animation="property: position; to: -0.3 0.5 0; dur: 800; dir: alternate; easing: easeInOutSine; loop: true">
+</a-sphere>
+<a-sphere color="#ffffff" radius="0.01" position="0.32 0.3 0"
+  animation="property: position; to: 0.32 0.48 0; dur: 1000; dir: alternate; easing: easeInOutSine; loop: true; delay: 200">
+</a-sphere>
+<a-sphere color="#ffdd44" radius="0.012" position="-0.15 0.4 0"
+  animation="property: position; to: -0.15 0.55 0; dur: 700; dir: alternate; easing: easeInOutSine; loop: true; delay: 400">
+</a-sphere>
+<a-sphere color="#c8a951" radius="0.008" position="0.18 0.38 0"
+  animation="property: position; to: 0.18 0.52 0; dur: 900; dir: alternate; easing: easeInOutSine; loop: true; delay: 100">
+</a-sphere>
+```
+
+  </a-entity>
+
+</a-scene>
+
+<script>
+  // Hide loading when AR is ready
+  const sceneEl = document.querySelector('a-scene');
+  sceneEl.addEventListener('loaded', () => {
+    setTimeout(() => {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('close-btn').style.display = 'flex';
+    }, 1500);
+  });
+
+  // Show which chapter is active
+  const targets = document.querySelectorAll('[mindar-image-target]');
+  const labels = [
+    'Chapter 1 — The Sacred Stone',
+    'Chapter 2 — The Theft',
+    'Chapter 3 — The Rebellion',
+    'Chapter 4 — Coming Home',
+    'Chapter 5 — Your Reward! 🎁'
+  ];
+  const labelEl = document.getElementById('scene-label');
+  const instrEl = document.getElementById('instruction');
+
+  targets.forEach((target, i) => {
+    target.addEventListener('targetFound', () => {
+      labelEl.textContent = labels[i];
+      labelEl.style.display = 'block';
+      instrEl.style.display = 'none';
+    });
+    target.addEventListener('targetLost', () => {
+      labelEl.style.display = 'none';
+      instrEl.style.display = 'block';
+    });
+  });
+</script>
+
+</body>
+</html>
