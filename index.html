@@ -1,428 +1,431 @@
-<!DOCTYPE html>
 
+ayesha asif <ayeshaasif223344@gmail.com>
+9:23 PM (0 minutes ago)
+to me
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
- <meta charset="UTF-8"/>
- <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
- <title>TaleCode UK — Edinburgh Castle</title>
- <style>
- * { margin:0; padding:0; box-sizing:border-box; }
- body {
- background: #000;
- overflow: hidden;
- height: 100vh; width: 100vw;
- font-family: Georgia, serif;
- }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+<title>TinsTale UK — Edinburgh Castle</title>
+<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#000; overflow:hidden; font-family:Georgia,serif; }
 
-```
-/* STARS */
-.stars { position:fixed; inset:0; pointer-events:none; z-index:0; }
-.star { position:absolute; border-radius:50%; background:#fff; animation:twinkle 3s infinite; }
-@keyframes twinkle { 0%,100%{opacity:.1} 50%{opacity:.7} }
-
-/* SPLASH */
-#splash {
- position:fixed; inset:0; z-index:1000;
- background:linear-gradient(160deg,#0d1b3e,#1a0a0a);
- display:flex; flex-direction:column;
- align-items:center; justify-content:center;
- text-align:center; padding:30px;
+#loading {
+position:fixed; inset:0; z-index:9999;
+background:linear-gradient(160deg,#0d1b3e,#1a0a0a);
+display:flex; flex-direction:column;
+align-items:center; justify-content:center; text-align:center;
 }
-.s-icon { font-size:72px; animation:floatY 3s ease-in-out infinite; margin-bottom:16px; }
-@keyframes floatY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
-.s-title { font-size:28px; color:#c8a951; letter-spacing:4px; margin-bottom:6px; }
-.s-sub { font-size:14px; color:#aaa; margin-bottom:6px; }
-.s-tag { font-size:16px; color:#e0c97a; font-style:italic; margin-bottom:14px; }
-.s-hint { font-size:13px; color:#666; margin-bottom:32px; }
-.s-btn {
- background:linear-gradient(135deg,#c8a951,#a07830);
- color:#0d1b3e; border:none;
- padding:16px 44px; font-size:18px;
- font-weight:bold; border-radius:50px; cursor:pointer;
- letter-spacing:2px;
- box-shadow:0 0 40px rgba(200,169,81,.6);
- animation:glow 2s ease-in-out infinite;
+#loading h2 { color:#c8a951; font-size:24px; margin-bottom:10px; }
+.spinner {
+width:40px; height:40px;
+border:3px solid rgba(200,169,81,0.2);
+border-top-color:#c8a951; border-radius:50%;
+animation:spin 1s linear infinite; margin:20px auto;
 }
-@keyframes glow { 0%,100%{box-shadow:0 0 20px rgba(200,169,81,.4)} 50%{box-shadow:0 0 55px rgba(200,169,81,.9)} }
+@keyframes spin { to{transform:rotate(360deg)} }
 
-/* MAIN */
-#main {
- display:none; position:relative; z-index:1;
- width:100vw; height:100vh;
- align-items:center; justify-content:center;
+#start-screen {
+position:fixed; inset:0; z-index:500;
+background:linear-gradient(160deg,#0d1b3e,#1a0a0a);
+display:none; flex-direction:column;
+align-items:center; justify-content:center;
+text-align:center; padding:30px;
+}
+#start-screen h2 { color:#c8a951; font-size:24px; margin-bottom:8px; }
+#start-screen p { color:#aaa; font-size:14px; margin-bottom:30px; line-height:1.8; }
+#start-btn {
+background:#c8a951; color:#000; border:none;
+border-radius:50px; padding:16px 44px;
+font-size:18px; font-family:Georgia,serif;
+cursor:pointer; letter-spacing:2px;
+box-shadow:0 0 30px rgba(200,169,81,0.4);
 }
 
-/* PROGRESS */
-#prog {
- position:fixed; top:0; left:0; right:0;
- height:4px; background:rgba(255,255,255,.1); z-index:200;
+#scan-msg {
+position:fixed; bottom:30px; left:0; right:0;
+text-align:center; z-index:100;
+color:#c8a951; font-size:15px;
+animation:pulse 2s ease-in-out infinite;
 }
-#prog-fill {
- height:100%;
- background:linear-gradient(90deg,#c8a951,#fff8a0);
- width:0%; transition:width .5s ease;
+@keyframes pulse { 0%,100%{opacity:0.5} 50%{opacity:1} }
+
+#film {
+position:fixed; inset:0; z-index:50;
+display:none; flex-direction:column;
+background:#000;
 }
 
-/* TOP LABEL */
-#top-label {
- position:fixed; top:16px; left:50%;
- transform:translateX(-50%); z-index:200;
- background:rgba(13,27,62,.9);
- border:1px solid rgba(200,169,81,.5);
- border-radius:30px; padding:7px 20px;
- color:#c8a951; font-size:12px;
- letter-spacing:2px; white-space:nowrap;
+#img-wrap {
+flex:1; overflow:hidden; position:relative;
+min-height:0;
+}
+#scene-image {
+width:100%; height:100%;
+object-fit:cover;
+animation:kenburns 25s ease-in-out forwards;
+}
+@keyframes kenburns {
+0% { transform:scale(1) translateX(0%) translateY(0%); }
+30% { transform:scale(1.08) translateX(-2%) translateY(-1%); }
+60% { transform:scale(1.12) translateX(2%) translateY(1%); }
+100% { transform:scale(1.06) translateX(-1%) translateY(0%); }
+}
+#img-wrap::after {
+content:''; position:absolute; inset:0;
+background:linear-gradient(to bottom,
+rgba(0,0,0,0.15) 0%,
+rgba(0,0,0,0) 35%,
+rgba(0,0,0,0.75) 100%);
 }
 
-/* 3D ROTATING CASTLE */
-.scene {
- perspective:1200px;
- width:100vw; height:100vh;
- display:flex; align-items:center; justify-content:center;
-}
-.castle-3d {
- width:min(82vw, 440px);
- height:min(82vw, 440px);
- position:relative;
- transform-style:preserve-3d;
- animation:spin360 14s linear infinite;
- border-radius:22px;
- box-shadow:0 0 80px rgba(200,169,81,.4), 0 0 140px rgba(200,169,81,.15);
-}
-@keyframes spin360 { from{transform:rotateY(0deg)} to{transform:rotateY(360deg)} }
-
-.castle-3d img {
- width:100%; height:100%;
- object-fit:cover;
- border-radius:22px;
- border:2px solid rgba(200,169,81,.4);
-}
-.castle-3d::before {
- content:''; position:absolute; inset:0; border-radius:22px; z-index:2;
- background:linear-gradient(105deg,transparent 30%,rgba(255,230,120,.25) 50%,transparent 70%);
- animation:sweep 14s linear infinite; pointer-events:none;
-}
-@keyframes sweep {
- 0%,100%{opacity:0} 35%{opacity:0} 48%{opacity:1} 52%{opacity:1} 65%{opacity:0}
+#chapter-badge {
+position:absolute; top:16px; left:50%;
+transform:translateX(-50%); z-index:10;
+background:rgba(13,27,62,0.92);
+border:1px solid #c8a951; border-radius:20px;
+padding:6px 20px; color:#c8a951;
+font-size:11px; letter-spacing:2px; white-space:nowrap;
 }
 
-/* AUDIO CONTROLS - bottom bar */
-#ctrl-bar {
- position:fixed; bottom:20px; left:50%;
- transform:translateX(-50%); z-index:200;
- background:rgba(13,27,62,.92);
- border:1px solid rgba(200,169,81,.45);
- border-radius:50px; padding:10px 24px;
- display:none; align-items:center; gap:16px;
-}
-#ctrl-bar button {
- background:none; border:none;
- color:#c8a951; font-size:22px;
- cursor:pointer; padding:0; line-height:1;
-}
-#ctrl-bar .vol-label { color:#888; font-size:12px; letter-spacing:1px; }
-#vol-slider {
- -webkit-appearance:none;
- width:80px; height:4px;
- background:rgba(200,169,81,.3); border-radius:2px; cursor:pointer;
-}
-#vol-slider::-webkit-slider-thumb {
- -webkit-appearance:none;
- width:14px; height:14px;
- background:#c8a951; border-radius:50%;
+#info-panel {
+background:linear-gradient(to bottom, #0d0d18, #000);
+padding:14px 20px 8px;
 }
 
-/* REWARD */
+#chapter-title {
+font-size:16px; letter-spacing:2px;
+color:#c8a951; margin-bottom:3px;
+}
+#subtitle {
+color:#888; font-size:11px; margin-bottom:8px;
+}
+#story-text {
+color:#ddd; font-size:12px;
+line-height:1.75; margin-bottom:10px;
+max-height:80px; overflow:hidden;
+}
+
+#progress-bar {
+width:100%; height:2px;
+background:rgba(255,255,255,0.1);
+border-radius:2px; margin-bottom:10px; overflow:hidden;
+}
+#progress-fill { height:100%; width:0%; background:#c8a951; }
+
+#controls {
+display:flex; align-items:center;
+justify-content:center; gap:16px;
+padding-bottom:6px;
+}
+.ctrl-btn {
+background:rgba(255,255,255,0.07);
+border:1px solid rgba(255,255,255,0.15);
+color:#fff; border-radius:50%;
+width:42px; height:42px; font-size:15px;
+cursor:pointer; display:flex;
+align-items:center; justify-content:center;
+}
+#play-btn {
+background:#c8a951; color:#000;
+width:52px; height:52px; font-size:20px;
+border:none; border-radius:50%;
+}
+
 #reward {
- display:none; position:fixed; inset:0; z-index:500;
- background:radial-gradient(ellipse at center,#0d1b0a,#0a0d14 70%);
- flex-direction:column; align-items:center; justify-content:center;
- text-align:center; padding:40px 24px;
+position:fixed; inset:0; z-index:200;
+background:linear-gradient(160deg,#0d1b3e,#050505);
+display:none; flex-direction:column;
+align-items:center; justify-content:center;
+text-align:center; padding:30px;
 }
-#reward.show { display:flex; }
-.r-icon { font-size:72px; animation:floatY 3s ease-in-out infinite; margin-bottom:16px; }
-.r-title { font-size:26px; color:#c8a951; margin-bottom:6px; }
-.r-sub { font-size:13px; color:#888; letter-spacing:2px; margin-bottom:28px; text-transform:uppercase; }
-.code-card {
- background:rgba(200,169,81,.1);
- border:2px solid #c8a951; border-radius:18px;
- padding:24px 36px; margin:12px 0;
+#reward .icon { font-size:60px; margin-bottom:12px; }
+#reward h2 { color:#c8a951; font-size:24px; margin-bottom:6px; }
+#reward .code {
+color:#fff; font-size:40px; font-weight:bold;
+letter-spacing:5px; margin:14px 0;
+text-shadow:0 0 20px rgba(200,169,81,0.7);
 }
-.c-lbl { font-size:11px; color:#888; letter-spacing:3px; margin-bottom:8px; text-transform:uppercase; }
-.c-val { font-size:40px; font-weight:700; color:#fff; letter-spacing:6px;
- text-shadow:0 0 20px rgba(200,169,81,.8); }
-.c-pct { font-size:14px; color:#c8a951; margin-top:8px; }
-.r-msg { font-size:15px; color:#ccc; max-width:380px; line-height:1.8; margin:16px 0; }
-.shop-btn {
- background:linear-gradient(135deg,#c8a951,#a07830);
- color:#0d1b3e; border:none; padding:14px 40px;
- font-size:17px; font-weight:bold; border-radius:50px;
- cursor:pointer; letter-spacing:1px; margin-top:12px;
- box-shadow:0 0 28px rgba(200,169,81,.4);
+#reward p { color:#aaa; font-size:13px; line-height:1.7; }
+#reward .disc { color:#c8a951; font-size:16px; margin-top:8px; }
+#replay-btn {
+margin-top:20px;
+background:transparent; color:#c8a951;
+border:1px solid #c8a951; border-radius:30px;
+padding:10px 28px; font-size:14px;
+font-family:Georgia,serif; cursor:pointer;
 }
-.nxt-box {
- margin-top:24px; padding:18px 22px; max-width:360px;
- background:rgba(255,255,255,.04); border-radius:12px;
- border:1px solid rgba(255,255,255,.08);
-}
-.nxt-box p { font-size:14px; color:#aaa; line-height:1.7; }
-.nxt-box strong { color:#c8a951; }
-
-.particle {
- position:fixed; pointer-events:none; border-radius:50%;
- animation:rise linear infinite;
-}
-@keyframes rise {
- 0% { transform:translateY(100vh) scale(1); opacity:.8; }
- 100%{ transform:translateY(-10vh) scale(.3); opacity:0; }
-}
-```
-
- </style>
+</style>
 </head>
 <body>
 
-<div class="stars" id="stars"></div>
-
-<!-- SPLASH -->
-
-<div id="splash">
- <div class="s-icon"> </div>
- <div class="s-title">TALECODE UK</div>
- <div class="s-sub">Edinburgh Castle Heritage Story</div>
- <div class="s-tag">"A thousand years of stories — just for you."</div>
- <div class="s-hint"> Please use headphones for best experience</div>
- <button class="s-btn" onclick="startStory()"> Begin the Story</button>
+<div id="loading">
+<h2>🏰 TinsTale UK</h2>
+<div class="spinner"></div>
+<p style="color:#aaa;font-size:14px;">Starting camera...</p>
 </div>
 
-<!-- MAIN -->
-
-<div id="main">
- <div id="prog"><div id="prog-fill"></div></div>
- <div id="top-label"> Edinburgh Castle</div>
-
- <div class="scene">
- <div class="castle-3d" id="castle3d">
- <!--
- Upload your castle photo to GitHub as castle.jpg
- This image will auto-rotate 360 degrees
- -->
- <img
- src="./castle.jpg"
- alt="Edinburgh Castle"
- onerror="this.parentElement.innerHTML='<div style=\'width:100%;height:100%;background:radial-gradient(#1a2a4a,#050810);border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:110px;\'> </div>'"
- />
- </div>
- </div>
-
- <!-- Controls -->
-
- <div id="ctrl-bar">
- <button onclick="togglePause()" id="pause-btn" title="Pause / Resume"> </button>
- <span class="vol-label"> </span>
- <input type="range" id="vol-slider" min="0" max="1" step="0.05" value="1" oninput="setVolume(this.value)"/>
- </div>
+<div id="start-screen">
+<div style="font-size:48px;margin-bottom:14px;">🏰</div>
+<h2>TinsTale UK</h2>
+<p>Point your camera at the tin<br>to begin your story journey.<br><br>
+<span style="color:#c8a951;font-size:13px;">The story will play automatically.</span></p>
+<button id="start-btn" onclick="beginExperience()">▶ BEGIN STORY</button>
 </div>
 
-<!-- REWARD -->
+<div id="scan-msg">📱 Point camera at your TinsTale tin</div>
+
+<div id="film">
+<div id="img-wrap">
+<div id="chapter-badge">Part 1 of 5</div>
+<img id="scene-image" src="" alt=""/>
+</div>
+<div id="info-panel">
+<div id="chapter-title"></div>
+<div id="subtitle"></div>
+<div id="story-text"></div>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<div id="controls">
+<button class="ctrl-btn" onclick="prevChapter()">⏮</button>
+<button class="ctrl-btn" id="play-btn" onclick="togglePause()">⏸</button>
+<button class="ctrl-btn" onclick="nextChapter()">⏭</button>
+</div>
+</div>
+</div>
 
 <div id="reward">
- <div class="r-icon"> </div>
- <h2 class="r-title">You Did It, Explorer!</h2>
- <p class="r-sub">You have unlocked your reward</p>
- <div class="code-card">
- <div class="c-lbl">Your Special Discount Code</div>
- <div class="c-val">DESTINY15</div>
- <div class="c-pct">15% off your next TaleCode UK kit</div>
- </div>
- <p class="r-msg">
- Use code <strong style="color:#c8a951">DESTINY15</strong> at checkout on Etsy
- to save 15%. Collect all 3 Edinburgh Castle designs — each unlocks a new chapter!
- </p>
- <button class="shop-btn" onclick="window.open('https://www.etsy.com/shop/TaleCodeUK','_blank')">
- Shop Now on Etsy →
- </button>
- <div class="nxt-box">
- <p><strong> Coming Next — Scottish Highlands</strong><br/>
- The Stag. The Glen. The Thistle.<br/>
- A brand new series launching very soon!</p>
- </div>
+<div class="icon">🎁</div>
+<h2>Your Reward is Here!</h2>
+<p>Thank you for journeying with TinsTale UK.<br>Use this code at checkout:</p>
+<div class="code">DESTINY15</div>
+<div class="disc">15% off your next TinsTale UK tin!</div>
+<br>
+<p style="color:#666;font-size:12px;">History is something you can hold in your hands,<br>grow in your home, and wear on your heart. 🌿</p>
+<button id="replay-btn" onclick="replayStory()">↩ Watch Again</button>
 </div>
 
+<a-scene
+mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiLoading: no; uiError: no; uiScanning: no;"
+color-space="sRGB"
+renderer="colorManagement: true; physicallyCorrectLights: true"
+vr-mode-ui="enabled: false"
+device-orientation-permission-ui="enabled: false">
+<a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+<a-entity mindar-image-target="targetIndex: 0">
+<a-ring color="#c8a951" radius-inner="0.06" radius-outer="0.08"
+rotation="-90 0 0" position="0 0 0"
+animation="property: rotation; to: -90 360 0; dur: 4000; easing: linear; loop: true">
+</a-ring>
+</a-entity>
+</a-scene>
+
 <script>
-// ══ STARS ══
-const starsEl = document.getElementById('stars');
-for (let i = 0; i < 90; i++) {
- const s = document.createElement('div');
- s.className = 'star';
- const sz = Math.random() * 2.5 + .4;
- s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation-delay:${Math.random()*4}s;animation-duration:${2+Math.random()*4}s`;
- starsEl.appendChild(s);
+const chapters = [
+{
+title: "WELCOME TO TINSTALE UK",
+subtitle: "Your journey begins...",
+image: "./chapter1.jpg",
+color: "#c8a951",
+story: "Take a deep breath… and let me take you somewhere very special. Imagine standing outside, looking up at a giant rock — formed by a volcano, almost 340 million years ago.",
+speech: "Welcome to Tins Tale UK. Take a deep breath… and let me take you somewhere… very special. Imagine you are standing outside… looking up at a giant rock. Not just any rock — a rock so ancient… so powerful… that it was formed by a volcano… almost three hundred and forty million years ago. The ground shook. Fire poured out. And slowly… this magnificent rock… was born. That rock is called Castle Rock. And on top of it… stands Edinburgh Castle."
+},
+{
+title: "THE SAFEST PLACE IN SCOTLAND",
+subtitle: "3,000 years of history",
+image: "./chapter2.jpg",
+color: "#d4af6a",
+story: "Before the castle was built, people knew this rock was special. Rising 80 metres above the city, three sides almost completely vertical. For over 3,000 years, families lived here — cooking, raising children, watching over their land.",
+speech: "Before the castle was ever built… people already knew this rock was special. It rises eighty metres above the city — as tall as a very tall building. Three of its sides are almost completely… straight up and down. No enemy could climb them. No army could reach the top easily. It was… the safest place… in all of Scotland. And so… people made it their home. Over three thousand years ago… families were already living on Castle Rock. They cooked their food there. They raised their children there. They watched over their land… from up high."
+},
+{
+title: "KING DAVID & MARY QUEEN OF SCOTS",
+subtitle: "900 years of royal history",
+image: "./chapter3.jpg",
+color: "#c8a951",
+story: "Around 1130, King David the First built the first great fortress here. Centuries later, the brave and beautiful Mary Queen of Scots gave birth inside these walls to her son — the future King James.",
+speech: "Around the year eleven thirty… almost nine hundred years ago… a Scottish King named King David the First… decided to build something magnificent on this rock. He was a good and gentle king. He loved his people. He built churches. He brought peace. And he built the first great fortress on Castle Rock. Over the centuries… many kings and queens added their own mark. New towers. New walls. New great halls. One of the most famous… was a young queen named Mary — Mary Queen of Scots. She was brave… she was beautiful… and she lived through some of the most dramatic moments in Scottish history. In fifteen sixty six… right inside the castle walls… she gave birth to her baby son… who would one day become King James the Sixth of Scotland."
+},
+{
+title: "THE TREASURES WITHIN",
+subtitle: "Crown Jewels · Stone of Destiny · One O'Clock Gun",
+image: "./chapter4.jpg",
+color: "#e8c97a",
+story: "Inside Edinburgh Castle lie Scotland's greatest treasures — the Honours of Scotland, the oldest Crown Jewels in Britain, the legendary Stone of Destiny, and the famous One O'Clock Gun, fired every day since 1861.",
+speech: "Now… let me tell you about the treasures inside Edinburgh Castle. First — the Honours of Scotland. The Crown… the Sceptre… and the Sword of State. These three objects are the oldest Crown Jewels in the entire British Isles — even older than the Crown Jewels in London. Second — the Stone of Destiny. For over five hundred years… every single Scottish king sat upon this simple block of sandstone when they were crowned. In twelve ninety six… it was stolen by an English king and taken to London. For seven hundred years… it was gone. But in nineteen ninety six… after seven whole centuries… it finally came home to Edinburgh Castle… where it belongs. And third — my personal favourite — the One O'Clock Gun. Every single day… at exactly one o'clock in the afternoon… BOOM! A big cannon is fired from the castle walls. It has been happening… every single day… since eighteen sixty one."
+},
+{
+title: "YOUR PIECE OF HISTORY",
+subtitle: "Edinburgh Castle lives in your home now",
+image: "./chapter5.jpg",
+color: "#c8a951",
+story: "Today, 2 million visitors walk these cobblestones each year. Every August, the Royal Edinburgh Military Tattoo fills the castle with bagpipes and drums. And now — a little piece of this castle belongs to you.",
+speech: "Today… Edinburgh Castle welcomes over two million visitors every year… from all around the world. People come to walk the same cobblestones that kings once walked. To stand where Mary Queen of Scots once stood. To feel the history… beneath their feet. Every August… the famous Royal Edinburgh Military Tattoo fills the castle with the sound of bagpipes and drums. The castle glows in the darkness. The music fills the air. And now… a little piece of this castle… belongs to you. In your Tins Tale UK tin… you have an embroidered Edinburgh Castle motif — wear it with pride. You have native Scottish wildflower seeds — plant them and watch Scotland bloom in your home. History is not just something in a book. It is something you can hold in your hands… grow in your home… and wear on your heart. Thank you… for journeying with Tins Tale UK today. Your reward… is waiting for you now. Enjoy it — you have earned it."
+}
+];
+
+let current = 0;
+let isPaused = false;
+let chapterTimer = null;
+let progressElapsed = 0;
+let progressStart = null;
+let isRunning = false;
+let storyStarted = false;
+const DURATIONS = [22000, 25000, 25000, 28000, 28000];
+
+function speak(text) {
+if (!window.speechSynthesis) return;
+window.speechSynthesis.cancel();
+const u = new SpeechSynthesisUtterance(text);
+u.lang = 'en-GB';
+u.rate = 0.78;
+u.pitch = 1.05;
+u.volume = 1.0;
+
+// Try to find a warm female British voice
+const voices = window.speechSynthesis.getVoices();
+const preferred = voices.find(v =>
+v.lang.startsWith('en') && (
+v.name.includes('Female') ||
+v.name.includes('Samantha') ||
+v.name.includes('Karen') ||
+v.name.includes('Moira') ||
+v.name.includes('Serena') ||
+v.name.includes('Martha') ||
+v.name.includes('Kate')
+)
+) || voices.find(v => v.lang.startsWith('en-GB'))
+|| voices.find(v => v.lang.startsWith('en'));
+
+if (preferred) u.voice = preferred;
+window.speechSynthesis.speak(u);
 }
 
-// ══ FULL STORY SCRIPT ══
-const storyText = `
-Welcome to TaleCode UK.
-
-Take a deep breath... and let me take you somewhere very special.
-
-Imagine you are standing outside, looking up at a giant rock. Not just any rock — a rock so ancient, so powerful, that it was formed by a volcano... almost 340 million years ago. The ground shook. Fire poured out. And slowly... this magnificent rock was born.
-
-That rock is called Castle Rock. And on top of it — stands Edinburgh Castle.
-
-Before the castle was ever built, people already knew this rock was special. It rises 80 metres above the city — as tall as a very tall building. Three of its sides are almost completely straight up and down. No enemy could climb them. No army could reach the top easily. It was... the safest place in all of Scotland.
-
-And so... people made it their home.
-
-Over 3000 years ago — long before anyone was born — families were already living on Castle Rock. They cooked their food there. They raised their children there. They watched over their land from up high.
-
-Then, around the year 1130 — almost 900 years ago — a Scottish King named King David the First decided to build something magnificent on this rock. King David was a good and gentle king. He loved his people. He built churches. He brought peace. And he built the first great fortress on Castle Rock — which we now call... Edinburgh Castle.
-
-Over the centuries that followed, many kings and queens added their own mark to the castle. New towers. New walls. New great halls. Each ruler left a little piece of themselves behind.
-
-One of the most famous was a young queen named Mary — Mary Queen of Scots. She was brave, she was beautiful, and she lived through some of the most dramatic moments in Scottish history. In 1566, right inside the castle walls, she gave birth to her baby son — who would one day become King James the Sixth of Scotland. A royal baby, born on that ancient volcanic rock.
-
-Now — let me tell you about the treasures inside Edinburgh Castle. Because this castle holds some of the most precious objects in all of Britain.
-
-First — the Honours of Scotland. The Crown, the Sceptre, and the Sword of State. These three objects together are the oldest Crown Jewels in the entire British Isles — even older than the Crown Jewels in London. They have been used to crown Scottish kings and queens for hundreds of years.
-
-Second — the Stone of Destiny. For over 500 years, every single Scottish king sat upon this simple block of sandstone when they were crowned. Just a plain stone. But to the people of Scotland, it carried the soul of their nation. In 1296, it was stolen and taken to London. For 700 years, it was gone. But in 1996 — after seven whole centuries — it finally came home to Edinburgh Castle, where it belongs.
-
-And third — my personal favourite — the One O'Clock Gun. Every single day, at exactly one o'clock in the afternoon... BOOM! A big cannon is fired from the castle walls. It has been happening every day since 1861. Ships in the harbour. Clocks in the city. Everyone checks the time when they hear that cannon.
-
-Today, Edinburgh Castle welcomes over 2 million visitors every year from all around the world. People come to walk the same cobblestones that kings once walked. To stand where Mary Queen of Scots once stood. To feel the history beneath their feet.
-
-Every August, the famous Royal Edinburgh Military Tattoo fills the castle esplanade with the sound of bagpipes and drums and performers from every corner of the world. The castle glows in the darkness. The music fills the air. And for a few magical weeks — Edinburgh Castle becomes the most spectacular stage on earth.
-
-And now — a little piece of this castle belongs to you.
-
-In your TaleCode UK tin, you have an embroidered Edinburgh Castle motif — wear it with pride. You have native Scottish wildflower seeds — plant them in your tin and watch Scotland bloom in your home. You have a collectible puzzle — frame it when it is complete. And you have a fridge magnet — so that Edinburgh Castle is with you, every single day.
-
-History is not just something in a book. It is something you can hold in your hands, grow in your home, and wear on your heart.
-
-Thank you for journeying with TaleCode UK today.
-
-Your reward is waiting for you now. Enjoy it — you have earned it.
-`.trim();
-
-// ══ SPEECH ══
-let utterance = null;
-let paused = false;
-const STORY_DURATION_MS = 170000; // ~2min 50sec for progress bar
-
-function getBestVoice() {
- const voices = window.speechSynthesis.getVoices();
- // Prefer a female English voice
- const preferred = [
- 'Google UK English Female',
- 'Google US English Female',
- 'Microsoft Zira',
- 'Microsoft Hazel',
- 'Karen',
- 'Samantha',
- 'Victoria',
- 'Moira',
- 'Fiona',
- 'Tessa'
- ];
- for (const name of preferred) {
- const v = voices.find(v => v.name === name);
- if (v) return v;
- }
- // Fallback — any female voice
- const female = voices.find(v =>
- v.name.toLowerCase().includes('female') ||
- v.name.toLowerCase().includes('woman') ||
- v.name.toLowerCase().includes('girl')
- );
- if (female) return female;
- // Last resort
- return voices.find(v => v.lang.startsWith('en')) || voices[0];
+function beginExperience() {
+document.getElementById('start-screen').style.display = 'none';
+document.getElementById('scan-msg').style.display = 'block';
+storyStarted = true;
+if (window.speechSynthesis) {
+window.speechSynthesis.getVoices();
+const unlock = new SpeechSynthesisUtterance('');
+window.speechSynthesis.speak(unlock);
+}
 }
 
-function speakStory() {
- window.speechSynthesis.cancel();
- utterance = new SpeechSynthesisUtterance(storyText);
- utterance.rate = 0.88; // slightly slow — warm storytelling pace
- utterance.pitch = 1.1; // slightly higher — softer female feel
- utterance.volume = 1.0;
+function loadChapter(index) {
+if (index >= chapters.length) { showReward(); return; }
+current = index;
+const ch = chapters[index];
+const dur = DURATIONS[index];
 
- const voice = getBestVoice();
- if (voice) utterance.voice = voice;
+document.getElementById('chapter-badge').textContent = `Part ${index+1} of 5`;
 
- // Animate progress bar over story duration
- const start = Date.now();
- const progInterval = setInterval(() => {
- if (paused) return;
- const elapsed = Date.now() - start;
- const pct = Math.min((elapsed / STORY_DURATION_MS) * 100, 97);
- document.getElementById('prog-fill').style.width = pct + '%';
- }, 500);
+const img = document.getElementById('scene-image');
+img.style.animation = 'none';
+img.src = ch.image;
+setTimeout(() => { img.style.animation = 'kenburns 25s ease-in-out forwards'; }, 50);
 
- utterance.onend = () => {
- clearInterval(progInterval);
- document.getElementById('prog-fill').style.width = '100%';
- setTimeout(showReward, 1800);
- };
+document.getElementById('chapter-title').textContent = ch.title;
+document.getElementById('chapter-title').style.color = ch.color;
+document.getElementById('subtitle').textContent = ch.subtitle;
+document.getElementById('story-text').textContent = ch.story;
 
- utterance.onerror = () => {
- clearInterval(progInterval);
- // If speech fails, show reward after delay
- setTimeout(showReward, 5000);
- };
+const fill = document.getElementById('progress-fill');
+fill.style.transition = 'none';
+fill.style.width = '0%';
+fill.style.background = ch.color;
+progressElapsed = 0;
+progressStart = Date.now();
+setTimeout(() => {
+fill.style.transition = `width ${dur}ms linear`;
+fill.style.width = '100%';
+}, 100);
 
- window.speechSynthesis.speak(utterance);
+speak(ch.speech);
+clearTimeout(chapterTimer);
+chapterTimer = setTimeout(() => loadChapter(current + 1), dur);
+isPaused = false;
+document.getElementById('play-btn').textContent = '⏸';
 }
 
 function togglePause() {
- const btn = document.getElementById('pause-btn');
- if (paused) {
- window.speechSynthesis.resume();
- paused = false;
- btn.textContent = ' ';
- document.getElementById('castle3d').style.animationPlayState = 'running';
- } else {
- window.speechSynthesis.pause();
- paused = true;
- btn.textContent = ' ';
- document.getElementById('castle3d').style.animationPlayState = 'paused';
- }
+const dur = DURATIONS[current];
+if (isPaused) {
+isPaused = false;
+document.getElementById('play-btn').textContent = '⏸';
+window.speechSynthesis.resume();
+const remaining = dur - progressElapsed;
+chapterTimer = setTimeout(() => loadChapter(current + 1), remaining);
+const fill = document.getElementById('progress-fill');
+fill.style.transition = `width ${remaining}ms linear`;
+fill.style.width = '100%';
+} else {
+isPaused = true;
+document.getElementById('play-btn').textContent = '▶';
+window.speechSynthesis.pause();
+progressElapsed = Date.now() - progressStart;
+clearTimeout(chapterTimer);
+const fill = document.getElementById('progress-fill');
+const pct = (progressElapsed / dur) * 100;
+fill.style.transition = 'none';
+fill.style.width = pct + '%';
+}
 }
 
-function setVolume(val) {
- if (utterance) utterance.volume = parseFloat(val);
+function nextChapter() {
+clearTimeout(chapterTimer);
+window.speechSynthesis && window.speechSynthesis.cancel();
+loadChapter(current + 1);
 }
 
-function startStory() {
- document.getElementById('splash').style.display = 'none';
- const main = document.getElementById('main');
- main.style.display = 'flex';
- document.getElementById('ctrl-bar').style.display = 'flex';
-
- // Voices may not load instantly on mobile — small delay
- setTimeout(() => {
- speakStory();
- }, 600);
+function prevChapter() {
+clearTimeout(chapterTimer);
+window.speechSynthesis && window.speechSynthesis.cancel();
+loadChapter(Math.max(0, current - 1));
 }
 
 function showReward() {
- window.speechSynthesis.cancel();
- document.getElementById('main').style.display = 'none';
- document.getElementById('reward').classList.add('show');
- // Celebration particles
- for (let i = 0; i < 20; i++) {
- const p = document.createElement('div');
- p.className = 'particle';
- const sz = Math.random() * 8 + 4;
- const colors = ['#c8a951','#fff8a0','#ffffff','#e0c97a','#ffdd44'];
- p.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${3+Math.random()*4}s;animation-delay:${Math.random()*2}s`;
- document.getElementById('reward').appendChild(p);
- }
+window.speechSynthesis && window.speechSynthesis.cancel();
+document.getElementById('film').style.display = 'none';
+document.getElementById('reward').style.display = 'flex';
+setTimeout(() => {
+speak("Your reward is waiting for you now. Use code DESTINY fifteen at checkout for fifteen percent off your next Tins Tale UK tin. Thank you… for journeying with us today.");
+}, 800);
 }
 
-// Load voices (needed for some browsers)
-window.speechSynthesis.onvoiceschanged = () => {};
-</script>
+function replayStory() {
+document.getElementById('reward').style.display = 'none';
+document.getElementById('film').style.display = 'flex';
+loadChapter(0);
+}
 
+function startFilm() {
+if (isRunning || !storyStarted) return;
+isRunning = true;
+document.getElementById('scan-msg').style.display = 'none';
+document.getElementById('film').style.display = 'flex';
+loadChapter(0);
+}
+
+document.querySelector('a-scene').addEventListener('loaded', function() {
+setTimeout(() => {
+document.getElementById('loading').style.display = 'none';
+document.getElementById('start-screen').style.display = 'flex';
+}, 2000);
+});
+
+// Preload voices
+if (window.speechSynthesis) {
+window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+}
+
+const target = document.querySelector('[mindar-image-target]');
+target.addEventListener('targetFound', startFilm);
+</script>
 </body>
 </html>
+
