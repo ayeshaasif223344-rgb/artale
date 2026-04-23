@@ -9,13 +9,14 @@
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body { background:#000; overflow:hidden; }
+
 #loading {
 position:fixed; inset:0; z-index:9999;
 background:linear-gradient(160deg,#0d1b3e,#1a0a0a);
 display:flex; flex-direction:column;
-align-items:center; justify-content:center; text-align:center;
+align-items:center; justify-content:center; text-align:center; padding:20px;
 }
-#loading h2 { color:#c8a951; font-size:22px; margin-bottom:10px; }
+#loading h2 { color:#c8a951; font-size:24px; margin-bottom:10px; }
 #loading p { color:#aaa; font-size:14px; }
 .spinner {
 width:40px; height:40px;
@@ -24,11 +25,67 @@ border-top-color:#c8a951; border-radius:50%;
 animation:spin 1s linear infinite; margin:20px auto;
 }
 @keyframes spin { to{transform:rotate(360deg)} }
-#instruction {
-position:fixed; bottom:20px; left:0; right:0;
-text-align:center; z-index:100; pointer-events:none;
+
+#chapter-ui {
+position:fixed; bottom:0; left:0; right:0;
+z-index:100; padding:16px;
+display:none; flex-direction:column; align-items:center; gap:10px;
 }
-#instruction p { color:#c8a951; font-size:15px; }
+
+#chapter-title {
+background:rgba(13,27,62,0.92);
+border:1px solid #c8a951;
+border-radius:12px; padding:10px 20px;
+color:#c8a951; font-size:16px;
+font-family:Georgia,serif; letter-spacing:2px;
+text-align:center;
+}
+
+#chapter-story {
+background:rgba(0,0,0,0.88);
+border:1px solid rgba(255,255,255,0.15);
+border-radius:12px; padding:14px 18px;
+color:#ffffff; font-size:13px;
+font-family:Georgia,serif; line-height:1.7;
+text-align:center; max-width:360px;
+}
+
+#progress-bar {
+width:80%; height:4px;
+background:rgba(255,255,255,0.15);
+border-radius:4px; overflow:hidden;
+}
+#progress-fill {
+height:100%; width:0%;
+background:#c8a951;
+transition:width 0.1s linear;
+}
+
+#chapter-counter {
+color:rgba(200,169,81,0.7);
+font-size:12px; font-family:Georgia,serif;
+}
+
+#scan-msg {
+position:fixed; bottom:30px; left:0; right:0;
+text-align:center; z-index:100;
+color:#c8a951; font-size:15px;
+font-family:Georgia,serif;
+animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:0.5} 50%{opacity:1} }
+
+#reward-overlay {
+position:fixed; inset:0; z-index:200;
+background:rgba(0,0,0,0.92);
+display:none; flex-direction:column;
+align-items:center; justify-content:center;
+text-align:center; padding:30px;
+}
+#reward-overlay h2 { color:#c8a951; font-size:28px; margin-bottom:10px; font-family:Georgia,serif; }
+#reward-overlay .code { color:#ffffff; font-size:42px; font-weight:bold; letter-spacing:4px; margin:16px 0; }
+#reward-overlay p { color:#aaa; font-size:14px; font-family:Georgia,serif; }
+#reward-overlay .discount { color:#c8a951; font-size:18px; margin-top:8px; }
 </style>
 </head>
 <body>
@@ -39,8 +96,23 @@ text-align:center; z-index:100; pointer-events:none;
 <p>Starting camera...</p>
 </div>
 
-<div id="instruction">
-<p>📱 Point camera at your image to begin</p>
+<div id="scan-msg">📱 Point camera at your TaleCode tin</div>
+
+<div id="chapter-ui">
+<div id="chapter-counter">Chapter 1 of 5</div>
+<div id="chapter-title">THE SACRED STONE</div>
+<div id="chapter-story">Loading...</div>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+</div>
+
+<div id="reward-overlay">
+<div style="font-size:60px">🎁</div>
+<h2>YOUR REWARD!</h2>
+<p>Use this code at checkout:</p>
+<div class="code">DESTINY15</div>
+<div class="discount">15% off your next TaleCode kit!</div>
+<br>
+<p style="color:#666; font-size:12px;">Thank you for exploring Scottish history!</p>
 </div>
 
 <a-scene
@@ -52,55 +124,113 @@ device-orientation-permission-ui="enabled: false">
 
 <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-<!-- TARGET 0 — Chapter 1 -->
 <a-entity mindar-image-target="targetIndex: 0">
-<a-plane color="#0d1b3e" opacity="0.8" width="0.8" height="0.5" position="0 0 0"></a-plane>
-<a-text value="THE SACRED STONE" align="center" color="#c8a951" width="1.8" position="0 0.1 0.01"></a-text>
-<a-text value="843 AD — Edinburgh Castle" align="center" color="#ffffff" width="1.4" position="0 -0.05 0.01"></a-text>
-<a-text value="Every King of Scotland\ncrowned upon this stone." align="center" color="#dddddd" width="1.3" position="0 -0.2 0.01"></a-text>
-</a-entity>
-
-<!-- TARGET 1 — Chapter 2 -->
-<a-entity mindar-image-target="targetIndex: 1">
-<a-plane color="#1a0000" opacity="0.8" width="0.8" height="0.5" position="0 0 0"></a-plane>
-<a-text value="THE THEFT" align="center" color="#ff4444" width="1.8" position="0 0.1 0.01"></a-text>
-<a-text value="1296 — Edward I" align="center" color="#ffffff" width="1.4" position="0 -0.05 0.01"></a-text>
-<a-text value="Stolen. Carried to London.\n700 years of silence." align="center" color="#dddddd" width="1.3" position="0 -0.2 0.01"></a-text>
-</a-entity>
-
-<!-- TARGET 2 — Chapter 3 -->
-<a-entity mindar-image-target="targetIndex: 2">
-<a-plane color="#00051a" opacity="0.8" width="0.8" height="0.5" position="0 0 0"></a-plane>
-<a-text value="THE REBELLION" align="center" color="#4499ff" width="1.8" position="0 0.1 0.01"></a-text>
-<a-text value="Christmas Night, 1950" align="center" color="#ffffff" width="1.4" position="0 -0.05 0.01"></a-text>
-<a-text value="4 students broke into\nWestminster Abbey." align="center" color="#dddddd" width="1.3" position="0 -0.2 0.01"></a-text>
-</a-entity>
-
-<!-- TARGET 3 — Chapter 4 -->
-<a-entity mindar-image-target="targetIndex: 3">
-<a-plane color="#001a0a" opacity="0.8" width="0.8" height="0.5" position="0 0 0"></a-plane>
-<a-text value="COMING HOME" align="center" color="#00ee77" width="1.8" position="0 0.1 0.01"></a-text>
-<a-text value="November 1996" align="center" color="#ffffff" width="1.4" position="0 -0.05 0.01"></a-text>
-<a-text value="Scotland exhaled.\nThe stone came home." align="center" color="#dddddd" width="1.3" position="0 -0.2 0.01"></a-text>
-</a-entity>
-
-<!-- TARGET 4 — Chapter 5 -->
-<a-entity mindar-image-target="targetIndex: 4">
-<a-plane color="#0a0d00" opacity="0.8" width="0.85" height="0.55" position="0 0 0"></a-plane>
-<a-text value="YOUR REWARD!" align="center" color="#c8a951" width="1.8" position="0 0.12 0.01"></a-text>
-<a-text value="USE CODE AT CHECKOUT:" align="center" color="#aaaaaa" width="1.3" position="0 -0.02 0.01"></a-text>
-<a-text value="DESTINY15" align="center" color="#ffffff" width="2.2" position="0 -0.15 0.01"></a-text>
-<a-text value="15% off your next TaleCode kit!" align="center" color="#c8a951" width="1.3" position="0 -0.27 0.01"></a-text>
+<a-ring color="#c8a951" radius-inner="0.08" radius-outer="0.1"
+rotation="-90 0 0" position="0 0 0"
+animation="property: rotation; to: -90 360 0; dur: 6000; easing: linear; loop: true">
+</a-ring>
+<a-sphere color="#c8a951" radius="0.04" position="0 0.08 0"
+animation="property: position; to: 0 0.14 0; dur: 1500; dir: alternate; easing: easeInOutSine; loop: true">
+</a-sphere>
 </a-entity>
 
 </a-scene>
 
 <script>
+const chapters = [
+{
+title: "🏰 THE SACRED STONE",
+story: "843 AD. Deep within Edinburgh Castle, a ancient stone held the fate of Scotland. Every King was crowned upon the Stone of Destiny. For 500 years, it carried the weight of a nation's soul.",
+color: "#c8a951"
+},
+{
+title: "⚔️ THE THEFT",
+story: "1296. Edward I of England — The Hammer of Scots — invaded Scotland. He seized the sacred stone and carried it to London. 700 years of silence began. Scotland wept.",
+color: "#ff4444"
+},
+{
+title: "🎓 THE REBELLION",
+story: "Christmas Night, 1950. Four brave Scottish students broke into Westminster Abbey. They stole back the Stone of Destiny. For a brief moment, Scotland exhaled. The stone was home.",
+color: "#4499ff"
+},
+{
+title: "🏴󠁧󠁢󠁳󠁣󠁴󠁿 COMING HOME",
+story: "November 1996. After 700 years of exile, the British Government finally returned the Stone of Destiny to Scotland. Crowds lined the streets of Edinburgh. A nation reclaimed its heart.",
+color: "#00ee77"
+},
+{
+title: "🎁 YOUR REWARD!",
+story: "You have uncovered the full story of the Stone of Destiny. As a reward for your curiosity and adventure — claim your special discount!",
+color: "#c8a951"
+}
+];
+
+let currentChapter = 0;
+let timer = null;
+let progressTimer = null;
+let isRunning = false;
+const CHAPTER_DURATION = 12000;
+
+function showChapter(index) {
+if (index >= chapters.length) {
+showReward();
+return;
+}
+
+currentChapter = index;
+const ch = chapters[index];
+
+document.getElementById('chapter-counter').textContent = `Chapter ${index + 1} of 5`;
+document.getElementById('chapter-title').textContent = ch.title;
+document.getElementById('chapter-title').style.color = ch.color;
+document.getElementById('chapter-title').style.borderColor = ch.color;
+document.getElementById('chapter-story').textContent = ch.story;
+
+// Progress bar
+const fill = document.getElementById('progress-fill');
+fill.style.transition = 'none';
+fill.style.width = '0%';
+fill.style.background = ch.color;
+setTimeout(() => {
+fill.style.transition = `width ${CHAPTER_DURATION}ms linear`;
+fill.style.width = '100%';
+}, 50);
+
+clearTimeout(timer);
+timer = setTimeout(() => showChapter(index + 1), CHAPTER_DURATION);
+}
+
+function showReward() {
+document.getElementById('chapter-ui').style.display = 'none';
+document.getElementById('reward-overlay').style.display = 'flex';
+clearTimeout(timer);
+}
+
+function startStory() {
+if (isRunning) return;
+isRunning = true;
+document.getElementById('scan-msg').style.display = 'none';
+document.getElementById('chapter-ui').style.display = 'flex';
+showChapter(0);
+}
+
+function stopStory() {
+isRunning = false;
+clearTimeout(timer);
+document.getElementById('chapter-ui').style.display = 'none';
+document.getElementById('reward-overlay').style.display = 'none';
+document.getElementById('scan-msg').style.display = 'block';
+}
+
 document.querySelector('a-scene').addEventListener('loaded', function() {
-setTimeout(function() {
+setTimeout(() => {
 document.getElementById('loading').style.display = 'none';
 }, 2000);
 });
+
+const target = document.querySelector('[mindar-image-target]');
+target.addEventListener('targetFound', startStory);
+target.addEventListener('targetLost', stopStory);
 </script>
 
 </body>
