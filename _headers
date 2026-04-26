@@ -1,0 +1,5 @@
+/*
+cache-control: no-cache
+/*.mp4
+content-type: video/mp4
+accept-ranges: bytes
