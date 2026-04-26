@@ -1,271 +1,640 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-<title>TinsTale UK — Edinburgh Castle</title>
-<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+<title>TaleCode UK — Edinburgh Castle AR Story</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:#000;overflow:hidden;font-family:Georgia,serif;}
-#loading{position:fixed;inset:0;z-index:9999;background:linear-gradient(160deg,#0d1b3e,#1a0a0a);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
-#loading h2{color:#c8a951;font-size:24px;margin-bottom:10px;}
-.spinner{width:40px;height:40px;border:3px solid rgba(200,169,81,0.2);border-top-color:#c8a951;border-radius:50%;animation:spin 1s linear infinite;margin:20px auto;}
-@keyframes spin{to{transform:rotate(360deg)}}
-#start-screen{position:fixed;inset:0;z-index:500;background:linear-gradient(160deg,#0d1b3e,#1a0a0a);display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;}
-#start-screen h2{color:#c8a951;font-size:24px;margin-bottom:8px;}
-#start-screen p{color:#aaa;font-size:14px;margin-bottom:30px;line-height:1.8;}
-#start-btn{background:#c8a951;color:#000;border:none;border-radius:50px;padding:16px 44px;font-size:18px;font-family:Georgia,serif;cursor:pointer;letter-spacing:2px;box-shadow:0 0 30px rgba(200,169,81,0.4);}
-#scan-msg{position:fixed;bottom:30px;left:0;right:0;text-align:center;z-index:100;color:#c8a951;font-size:15px;animation:pulse 2s ease-in-out infinite;}
-@keyframes pulse{0%,100%{opacity:0.5}50%{opacity:1}}
-#film{position:fixed;inset:0;z-index:50;display:none;flex-direction:column;background:#000;}
-#img-wrap{flex:1;overflow:hidden;position:relative;min-height:0;}
-#scene-image{width:100%;height:100%;object-fit:cover;animation:kenburns 25s ease-in-out forwards;}
-@keyframes kenburns{
- 0%{transform:scale(1) translateX(0%) translateY(0%);}
- 30%{transform:scale(1.08) translateX(-2%) translateY(-1%);}
- 60%{transform:scale(1.12) translateX(2%) translateY(1%);}
- 100%{transform:scale(1.06) translateX(-1%) translateY(0%);}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{background:#000;font-family:Georgia,serif;overflow:hidden;height:100vh;width:100vw;}
+
+```
+/* STARS */
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle 3s infinite;}
+@keyframes twinkle{0%,100%{opacity:.1}50%{opacity:.8}}
+
+/* SPLASH */
+#splash{
+position:fixed;inset:0;z-index:1000;
+background:linear-gradient(160deg,#0d1b3e,#1a0a0a);
+display:flex;flex-direction:column;
+align-items:center;justify-content:center;
+text-align:center;padding:30px;
 }
-#img-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.15) 0%,rgba(0,0,0,0) 35%,rgba(0,0,0,0.75) 100%);}
-#chapter-badge{position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:10;background:rgba(13,27,62,0.92);border:1px solid #c8a951;border-radius:20px;padding:6px 20px;color:#c8a951;font-size:11px;letter-spacing:2px;white-space:nowrap;}
-#info-panel{background:linear-gradient(to bottom,#0d0d18,#000);padding:14px 20px 8px;}
-#chapter-title{font-size:16px;letter-spacing:2px;color:#c8a951;margin-bottom:3px;}
-#subtitle{color:#888;font-size:11px;margin-bottom:8px;}
-#story-text{color:#ddd;font-size:12px;line-height:1.75;margin-bottom:10px;max-height:75px;overflow:hidden;}
-#progress-bar{width:100%;height:2px;background:rgba(255,255,255,0.1);border-radius:2px;margin-bottom:10px;overflow:hidden;}
-#progress-fill{height:100%;width:0%;background:#c8a951;}
-#controls{display:flex;align-items:center;justify-content:center;gap:16px;padding-bottom:6px;}
-.ctrl-btn{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:50%;width:42px;height:42px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-#play-btn{background:#c8a951;color:#000;width:52px;height:52px;font-size:20px;border:none;border-radius:50%;}
-#reward{position:fixed;inset:0;z-index:200;background:linear-gradient(160deg,#0d1b3e,#050505);display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;}
-#reward .icon{font-size:60px;margin-bottom:12px;}
-#reward h2{color:#c8a951;font-size:24px;margin-bottom:6px;}
-#reward .code{color:#fff;font-size:40px;font-weight:bold;letter-spacing:5px;margin:14px 0;text-shadow:0 0 20px rgba(200,169,81,0.7);}
-#reward p{color:#aaa;font-size:13px;line-height:1.7;}
-#reward .disc{color:#c8a951;font-size:16px;margin-top:8px;}
-#replay-btn{margin-top:20px;background:transparent;color:#c8a951;border:1px solid #c8a951;border-radius:30px;padding:10px 28px;font-size:14px;font-family:Georgia,serif;cursor:pointer;}
+.sp-icon{font-size:72px;animation:floatY 3s ease-in-out infinite;margin-bottom:16px;}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.sp-title{font-size:28px;color:#c8a951;letter-spacing:4px;margin-bottom:6px;}
+.sp-sub{font-size:14px;color:#aaa;margin-bottom:6px;}
+.sp-tag{font-size:16px;color:#e0c97a;font-style:italic;margin-bottom:10px;}
+.sp-dur{
+background:rgba(200,169,81,.12);border:1px solid rgba(200,169,81,.3);
+border-radius:20px;padding:8px 20px;
+font-size:13px;color:#c8a951;margin-bottom:32px;
+letter-spacing:1px;
+}
+.sp-btn{
+background:linear-gradient(135deg,#c8a951,#a07830);
+color:#0d1b3e;border:none;padding:16px 44px;
+font-size:18px;font-weight:bold;border-radius:50px;cursor:pointer;
+letter-spacing:2px;box-shadow:0 0 40px rgba(200,169,81,.6);
+animation:glow 2s ease-in-out infinite;
+}
+@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(200,169,81,.4)}50%{box-shadow:0 0 55px rgba(200,169,81,.9)}}
+
+/* MAIN SCENE */
+#scene{display:none;position:fixed;inset:0;z-index:1;}
+
+/* VIDEO */
+#bg-video{
+position:fixed;inset:0;width:100%;height:100%;
+object-fit:cover;z-index:1;
+}
+.bg-overlay{
+position:fixed;inset:0;z-index:2;pointer-events:none;
+background:linear-gradient(to bottom,
+rgba(0,0,0,.25) 0%,
+transparent 25%,
+transparent 55%,
+rgba(0,0,0,.75) 100%);
+}
+
+/* PROGRESS */
+#prog{position:fixed;top:0;left:0;right:0;height:5px;background:rgba(255,255,255,.1);z-index:300;}
+#prog-fill{height:100%;background:linear-gradient(90deg,#c8a951,#fff8a0);width:0%;transition:width .4s;}
+
+/* CHAPTER LABEL */
+#ch-label{
+position:fixed;top:14px;left:50%;transform:translateX(-50%);
+z-index:300;background:rgba(10,20,50,.88);
+border:1px solid rgba(200,169,81,.5);border-radius:30px;
+padding:7px 20px;color:#c8a951;font-size:11px;
+letter-spacing:2px;white-space:nowrap;display:none;
+text-transform:uppercase;
+}
+
+/* SHOT TIMER */
+#timer-bar{position:fixed;top:24px;left:0;right:0;height:3px;background:rgba(255,255,255,.06);z-index:299;display:none;}
+#timer-fill{height:100%;background:rgba(200,169,81,.45);width:100%;}
+
+/* ════════════════════════════
+INTERACTION LAYER (z:100)
+════════════════════════════ */
+#interact-layer{
+position:fixed;inset:0;z-index:100;
+pointer-events:none;
+}
+
+/* ── TAP BUTTON (Shots 1,2,6,7) ── */
+#tap-btn{
+position:fixed;bottom:36px;left:50%;transform:translateX(-50%);
+z-index:110;
+background:linear-gradient(135deg,#c8a951,#a07830);
+color:#0d1b3e;border:none;padding:13px 34px;
+font-size:15px;font-weight:bold;border-radius:50px;cursor:pointer;
+letter-spacing:1px;pointer-events:all;display:none;
+box-shadow:0 0 28px rgba(200,169,81,.6);
+animation:btnPulse 2s ease-in-out infinite;
+}
+@keyframes btnPulse{0%,100%{box-shadow:0 0 16px rgba(200,169,81,.4)}50%{box-shadow:0 0 40px rgba(200,169,81,.9)}}
+
+/* ── X-RAY (Shot 3) ── */
+#xray-btn{
+position:fixed;bottom:36px;left:50%;transform:translateX(-50%);
+z-index:110;
+background:linear-gradient(135deg,#0044cc,#0088ff);
+color:#fff;border:none;padding:13px 34px;
+font-size:15px;font-weight:bold;border-radius:50px;cursor:pointer;
+letter-spacing:1px;pointer-events:all;display:none;
+box-shadow:0 0 28px rgba(0,100,255,.7);
+animation:xrayPulse 1.5s ease-in-out infinite;
+}
+@keyframes xrayPulse{0%,100%{box-shadow:0 0 20px rgba(0,100,255,.5)}50%{box-shadow:0 0 50px rgba(0,180,255,1)}}
+#xray-overlay{
+position:fixed;inset:0;z-index:90;
+background:radial-gradient(ellipse at center,rgba(0,80,255,.3),rgba(0,200,255,.1) 40%,transparent 70%);
+display:none;pointer-events:none;
+animation:xGlow 2s ease-in-out infinite;
+}
+@keyframes xGlow{0%,100%{opacity:.6}50%{opacity:1}}
+#xray-lines{
+position:fixed;inset:0;z-index:91;
+pointer-events:none;display:none;
+background:repeating-linear-gradient(
+0deg,
+transparent,transparent 8px,
+rgba(0,180,255,.06) 8px,rgba(0,180,255,.06) 9px
+);
+}
+
+/* ── 3 DOTS (Shot 4) ── */
+.dot{
+position:fixed;z-index:110;
+width:44px;height:44px;border-radius:50%;
+display:none;align-items:center;justify-content:center;
+font-size:20px;cursor:pointer;pointer-events:all;
+animation:dotFloat 2s ease-in-out infinite;
+border:2px solid rgba(255,255,255,.6);
+}
+.dot:nth-child(1){animation-delay:0s;}
+.dot:nth-child(2){animation-delay:.4s;}
+.dot:nth-child(3){animation-delay:.8s;}
+@keyframes dotFloat{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(1.15) translateY(-6px)}}
+#dot1{top:38%;left:18%;background:rgba(200,169,81,.35);}
+#dot2{top:52%;left:62%;background:rgba(68,136,255,.35);}
+#dot3{top:68%;left:38%;background:rgba(68,200,120,.35);}
+
+/* ── COUNTER (Shots 5,8) ── */
+#counter-wrap{
+position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+z-index:110;text-align:center;display:none;
+pointer-events:none;
+}
+.counter-num{
+font-size:80px;font-weight:900;color:#c8a951;
+text-shadow:0 0 40px rgba(200,169,81,.9),0 0 80px rgba(200,169,81,.4);
+line-height:1;animation:numGlow 1s ease-in-out infinite alternate;
+}
+@keyframes numGlow{from{text-shadow:0 0 20px rgba(200,169,81,.5)}to{text-shadow:0 0 60px rgba(200,169,81,1)}}
+.counter-lbl{
+font-size:13px;color:#e0c97a;letter-spacing:3px;
+text-transform:uppercase;margin-top:8px;
+text-shadow:0 1px 4px rgba(0,0,0,.9);
+}
+
+/* ════════════════
+POPUP
+════════════════ */
+#popup{
+position:fixed;inset:0;z-index:200;
+background:rgba(0,0,0,.88);
+display:none;flex-direction:column;
+align-items:center;justify-content:center;
+padding:30px 24px;text-align:center;
+animation:fadeIn .4s ease;
+}
+#popup.show{display:flex;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.pop-icon{font-size:58px;margin-bottom:14px;animation:floatY 3s ease-in-out infinite;}
+.pop-title{font-size:22px;color:#c8a951;margin-bottom:10px;letter-spacing:1px;}
+.pop-divider{width:50px;height:2px;background:linear-gradient(90deg,transparent,#c8a951,transparent);margin:0 auto 16px;}
+.pop-text{font-size:15px;color:#ddd;line-height:1.9;max-width:340px;margin-bottom:24px;}
+.pop-close{
+background:rgba(200,169,81,.15);border:1px solid #c8a951;
+color:#c8a951;padding:11px 30px;border-radius:50px;
+font-size:14px;cursor:pointer;letter-spacing:1px;
+}
+
+/* ════════════════
+SHOT 9 — TIN
+════════════════ */
+#shot9{
+display:none;position:fixed;inset:0;z-index:50;
+background:radial-gradient(ellipse at center,#0d1b3e,#050810 80%);
+flex-direction:column;align-items:center;justify-content:center;
+text-align:center;padding:30px;cursor:pointer;
+}
+#shot9.show{display:flex;}
+.tin-wrap{
+width:min(75vw,300px);height:min(75vw,300px);
+animation:floatY 4s ease-in-out infinite;
+border-radius:20px;
+box-shadow:0 0 70px rgba(200,169,81,.45);
+border:2px solid rgba(200,169,81,.35);
+overflow:hidden;
+}
+.tin-wrap img{width:100%;height:100%;object-fit:cover;}
+.tin-hint{margin-top:20px;font-size:14px;color:#c8a951;
+letter-spacing:2px;animation:btnPulse 2s ease-in-out infinite;}
+
+/* Shot 9 text */
+#shot9-txt{
+display:none;position:fixed;inset:0;z-index:55;
+background:rgba(0,0,0,.93);
+flex-direction:column;align-items:center;justify-content:center;
+text-align:center;padding:32px 24px;
+animation:fadeIn .6s ease;
+}
+#shot9-txt.show{display:flex;}
+.s9-icon{font-size:54px;margin-bottom:14px;animation:floatY 3s ease-in-out infinite;}
+.s9-title{font-size:23px;color:#c8a951;margin-bottom:10px;line-height:1.3;}
+.s9-div{width:50px;height:2px;background:linear-gradient(90deg,transparent,#c8a951,transparent);margin:0 auto 16px;}
+.s9-body{font-size:15px;color:#ddd;line-height:1.95;max-width:340px;margin-bottom:26px;font-style:italic;}
+.s9-body .hl{color:#c8a951;font-weight:bold;font-style:normal;}
+.s9-btn{
+background:linear-gradient(135deg,#c8a951,#a07830);
+color:#0d1b3e;border:none;padding:14px 40px;
+font-size:17px;font-weight:bold;border-radius:50px;
+cursor:pointer;letter-spacing:1px;
+box-shadow:0 0 30px rgba(200,169,81,.5);
+animation:glow 2s ease-in-out infinite;
+}
+
+/* CONFETTI */
+.cf{position:fixed;pointer-events:none;z-index:400;border-radius:2px;animation:fall linear forwards;}
+@keyframes fall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+
+/* REWARD */
+#reward{
+display:none;position:fixed;inset:0;z-index:500;
+background:radial-gradient(ellipse at center,#081a06,#040810 70%);
+flex-direction:column;align-items:center;justify-content:center;
+text-align:center;padding:40px 24px;overflow-y:auto;
+}
+#reward.show{display:flex;}
+.r-icon{font-size:70px;animation:floatY 3s ease-in-out infinite;margin-bottom:14px;}
+.r-title{font-size:26px;color:#c8a951;margin-bottom:6px;}
+.r-sub{font-size:11px;color:#888;letter-spacing:3px;margin-bottom:26px;text-transform:uppercase;}
+.code-card{background:rgba(200,169,81,.1);border:2px solid #c8a951;border-radius:18px;padding:22px 34px;margin:10px 0;}
+.c-lbl{font-size:11px;color:#888;letter-spacing:3px;margin-bottom:8px;text-transform:uppercase;}
+.c-val{font-size:38px;font-weight:700;color:#fff;letter-spacing:6px;text-shadow:0 0 20px rgba(200,169,81,.8);}
+.c-pct{font-size:14px;color:#c8a951;margin-top:8px;}
+.r-msg{font-size:15px;color:#ccc;max-width:340px;line-height:1.8;margin:14px 0;}
+.shop-btn{
+background:linear-gradient(135deg,#c8a951,#a07830);
+color:#0d1b3e;border:none;padding:14px 38px;
+font-size:17px;font-weight:bold;border-radius:50px;
+cursor:pointer;box-shadow:0 0 26px rgba(200,169,81,.4);margin-top:10px;
+}
+.nxt-box{margin-top:20px;padding:16px 20px;max-width:340px;background:rgba(255,255,255,.04);border-radius:12px;border:1px solid rgba(255,255,255,.08);}
+.nxt-box p{font-size:13px;color:#aaa;line-height:1.7;}
+.nxt-box strong{color:#c8a951;}
+```
+
 </style>
 </head>
 <body>
 
-<div id="loading">
- <h2> TinsTale UK</h2>
- <div class="spinner"></div>
- <p style="color:#aaa;font-size:14px;">Starting camera...</p>
+<div class="stars" id="stars"></div>
+
+<!-- SPLASH -->
+
+<div id="splash">
+<div class="sp-icon">🏰</div>
+<div class="sp-title">TALECODE UK</div>
+<div class="sp-sub">Edinburgh Castle — AR Heritage Story</div>
+<div class="sp-tag">"340 million years of history — just for you."</div>
+<div class="sp-dur">🎧 2 min 23 sec • 9 Chapters • Turn volume up!</div>
+<button class="sp-btn" onclick="startStory()">▶ Begin the Story</button>
 </div>
 
-<div id="start-screen">
- <div style="font-size:48px;margin-bottom:14px;"> </div>
- <h2>TinsTale UK</h2>
- <p>Point your camera at the tin<br>to begin your story journey.<br><br>
- <span style="color:#c8a951;font-size:13px;">The story will play automatically.</span></p>
- <button id="start-btn" onclick="beginExperience()"> BEGIN STORY</button>
+<!-- SCENE -->
+
+<div id="scene">
+<div id="prog"><div id="prog-fill"></div></div>
+<div id="ch-label"></div>
+<div id="timer-bar"><div id="timer-fill"></div></div>
+
+<video id="bg-video" playsinline preload="auto" onended="onVideoEnd()"></video>
+
+<div class="bg-overlay"></div>
+
+<!-- Interaction layer -->
+
+<div id="interact-layer">
+<!-- Tap buttons -->
+<button id="tap-btn" onclick="showPopup()"></button>
+<!-- X-Ray -->
+<button id="xray-btn" onclick="activateXray()">🔵 X-Ray View</button>
+<div id="xray-overlay"></div>
+<div id="xray-lines"></div>
+<!-- 3 Dots -->
+<div class="dot" id="dot1" onclick="showDotPopup(0)">👑</div>
+<div class="dot" id="dot2" onclick="showDotPopup(1)">🏠</div>
+<div class="dot" id="dot3" onclick="showDotPopup(2)">👶</div>
+<!-- Counter -->
+<div id="counter-wrap">
+<div class="counter-num" id="counter-num">0</div>
+<div class="counter-lbl" id="counter-lbl"></div>
+</div>
+</div>
 </div>
 
-<div id="scan-msg"> Point camera at your TinsTale tin</div>
+<!-- POPUP -->
 
-<div id="film">
- <div id="img-wrap">
- <div id="chapter-badge">Part 1 of 5</div>
- <img id="scene-image" src="./castle.jpg" alt=""/>
- </div>
- <div id="info-panel">
- <div id="chapter-title"></div>
- <div id="subtitle"></div>
- <div id="story-text"></div>
- <div id="progress-bar"><div id="progress-fill"></div></div>
- <div id="controls">
- <button class="ctrl-btn" onclick="prevChapter()"> </button>
- <button class="ctrl-btn" id="play-btn" onclick="togglePause()"> </button>
- <button class="ctrl-btn" onclick="nextChapter()"> </button>
- </div>
- </div>
+<div id="popup">
+<div class="pop-icon" id="pop-icon"></div>
+<div class="pop-title" id="pop-title"></div>
+<div class="pop-divider"></div>
+<div class="pop-text" id="pop-text"></div>
+<button class="pop-close" onclick="closePopup()">Continue ▶</button>
 </div>
+
+<!-- SHOT 9 TIN -->
+
+<div id="shot9" onclick="revealTinText()">
+<div class="tin-wrap">
+<img src="./tin.jpg" alt="TaleCode UK Heritage Tin"
+onerror="this.style.display='none';this.parentElement.style.background='#1a2a4a';this.parentElement.innerHTML='<div style=\'font-size:80px;display:flex;align-items:center;justify-content:center;height:100%;\'>🏺</div>'"/>
+</div>
+<div class="tin-hint">✨ Tap to reveal your story ✨</div>
+</div>
+
+<!-- SHOT 9 TEXT -->
+
+<div id="shot9-txt">
+<div class="s9-icon">🏰</div>
+<h2 class="s9-title">Your Heritage.<br/>Your Story.</h2>
+<div class="s9-div"></div>
+<p class="s9-body">
+And now, my dear... a little piece of this
+<span class="hl">340 million year old mountain</span> belongs to you.<br/><br/>
+The <span class="hl">embroidered patch</span> carries its story.
+The <span class="hl">puzzle</span> holds its image.
+The <span class="hl">magnet</span> will keep it in your home every single day.<br/><br/>
+<span class="hl">Din Eidyn</span> — the ancient fortress on the hill —
+lives on... in your hands.
+</p>
+<button class="s9-btn" onclick="launchReward()">🎁 Claim Your Reward</button>
+</div>
+
+<!-- REWARD -->
 
 <div id="reward">
- <div class="icon"> </div>
- <h2>Your Reward is Here!</h2>
- <p>Thank you for journeying with TinsTale UK.<br>Use this code at checkout:</p>
- <div class="code">DESTINY15</div>
- <div class="disc">15% off your next TinsTale UK tin!</div>
- <br>
- <p style="color:#666;font-size:12px;">History is something you can hold<br>in your hands, grow in your home,<br>and wear on your heart. </p>
- <button id="replay-btn" onclick="replayStory()">↩ Watch Again</button>
+<div class="r-icon">🎁</div>
+<h2 class="r-title">You Did It, Explorer!</h2>
+<p class="r-sub">Your reward is unlocked</p>
+<div class="code-card">
+<div class="c-lbl">Your Exclusive Discount Code</div>
+<div class="c-val">DESTINY15</div>
+<div class="c-pct">15% off your next TaleCode UK kit</div>
+</div>
+<p class="r-msg">Use code <strong style="color:#c8a951">DESTINY15</strong> at checkout on Etsy. Collect all 3 Edinburgh Castle designs!</p>
+<button class="shop-btn" onclick="window.open('https://www.etsy.com/shop/TaleCodeUK','_blank')">Shop Now on Etsy →</button>
+<div class="nxt-box">
+<p><strong>🏔️ Coming Next — Scottish Highlands Edition</strong><br/>
+The Stag. The Glen. The Thistle.<br/>
+A brand new series. A brand new story.<br/>
+<strong>Launching very soon!</strong></p>
+</div>
 </div>
 
-<a-scene
- mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiLoading: no; uiError: no; uiScanning: no;"
- color-space="sRGB"
- renderer="colorManagement: true; physicallyCorrectLights: true"
- vr-mode-ui="enabled: false"
- device-orientation-permission-ui="enabled: false">
- <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
- <a-entity mindar-image-target="targetIndex: 0">
- <a-ring color="#c8a951" radius-inner="0.06" radius-outer="0.08"
- rotation="-90 0 0" position="0 0 0"
- animation="property: rotation; to: -90 360 0; dur: 4000; easing: linear; loop: true">
- </a-ring>
- </a-entity>
-</a-scene>
-
 <script>
-const chapters=[
+// ── STARS ──
+const starsEl=document.getElementById('stars');
+for(let i=0;i<80;i++){
+const s=document.createElement('div');s.className='star';
+const sz=Math.random()*2.5+.4;
+s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation-delay:${Math.random()*4}s;animation-duration:${2+Math.random()*4}s`;
+starsEl.appendChild(s);
+}
+
+// ── SHOT DATA ──
+const shots = [
 {
- title:"WELCOME TO TINSTALE UK",
- subtitle:"Your journey begins...",
- image:"./castle.jpg",
- color:"#c8a951",
- story:"Take a deep breath… and let me take you somewhere very special. Imagine standing outside, looking up at a giant rock — formed by a volcano, almost 340 million years ago.",
- speech:"Welcome to Tins Tale UK. Take a deep breath… and let me take you somewhere… very special. Imagine you are standing outside… looking up at a giant rock. Not just any rock — a rock so ancient… so powerful… that it was formed by a volcano… almost three hundred and forty million years ago. The ground shook. Fire poured out. And slowly… this magnificent rock… was born. That rock is called Castle Rock. And on top of it… stands Edinburgh Castle."
+file:'./shot1.mp4', duration:14,
+label:'Chapter 1 — Din Eidyn',
+type:'popup',
+btn:'✨ Discover Din Eidyn',
+popup:{icon:'🏔️', title:'Din Eidyn — The Original Name',
+text:'The name Din Eidyn comes from ancient Celtic language. "Din" means fortress. "Eidyn" was the name of this hilltop. This ancient name eventually became... Edinburgh.'}
 },
 {
- title:"THE SAFEST PLACE IN SCOTLAND",
- subtitle:"3,000 years of history",
- image:"./castle.jpg",
- color:"#d4af6a",
- story:"Rising 80 metres above the city, three sides almost completely vertical. For over 3,000 years, families lived here — cooking, raising children, watching over their land.",
- speech:"Before the castle was ever built… people already knew this rock was special. It rises eighty metres above the city. Three of its sides are almost completely… straight up and down. No enemy could climb them. It was… the safest place… in all of Scotland. Over three thousand years ago… families were already living on Castle Rock. They cooked their food there. They raised their children there. They watched over their land… from up high."
+file:'./shot2.mp4', duration:19,
+label:'Chapter 2 — The Volcano',
+type:'popup',
+btn:'🌋 Discover the Volcano',
+popup:{icon:'🌋', title:'Born From Fire',
+text:'Castle Rock was formed by a massive volcanic eruption 340 million years ago. The lava cooled into incredibly hard basalt rock — making it the strongest natural fortress in Britain.'}
 },
 {
- title:"KING DAVID & MARY QUEEN OF SCOTS",
- subtitle:"900 years of royal history",
- image:"./castle.jpg",
- color:"#c8a951",
- story:"Around 1130, King David the First built the first great fortress here. Mary Queen of Scots gave birth inside these walls to her son — the future King James.",
- speech:"Around the year eleven thirty… almost nine hundred years ago… King David the First… decided to build something magnificent on this rock. He was a good and gentle king. He loved his people. He built churches. He brought peace. One of the most famous rulers was a young queen named Mary — Mary Queen of Scots. She was brave… she was beautiful… and in fifteen sixty six… right inside the castle walls… she gave birth to her baby son… who would one day become King James the Sixth of Scotland."
+file:'./shot3.mp4', duration:21,
+label:'Chapter 3 — Sleeping Below',
+type:'xray',
+popup:{icon:'🌡️', title:'The Sleeping Giant',
+text:'Scientists have confirmed a magma chamber still exists deep below Edinburgh. It has been dormant for 350 million years. The castle literally sits on top of a sleeping volcano!'}
 },
 {
- title:"THE TREASURES WITHIN",
- subtitle:"Crown Jewels · Stone of Destiny · One O'Clock Gun",
- image:"./castle.jpg",
- color:"#e8c97a",
- story:"Inside lie Scotland's greatest treasures — the oldest Crown Jewels in Britain, the Stone of Destiny stolen for 700 years, and the One O'Clock Gun fired every day since 1861.",
- speech:"Now… let me tell you about the treasures inside Edinburgh Castle. First — the Honours of Scotland. The Crown… the Sceptre… and the Sword of State. The oldest Crown Jewels in the entire British Isles. Second — the Stone of Destiny. Stolen in twelve ninety six… gone for seven hundred years. But in nineteen ninety six… it finally came home. And third — my personal favourite — the One O'Clock Gun. Every single day… at exactly one o'clock… BOOM! A cannon is fired from the castle walls. Every single day… since eighteen sixty one."
+file:'./shot4.mp4', duration:16,
+label:'Chapter 4 — The Votadini',
+type:'dots',
+dots:[
+{icon:'👑', title:'Their King', text:'The Votadini king ruled from this hilltop. He was called the Lord of Din Eidyn. His seat of power looked down over all of Scotland.'},
+{icon:'🏠', title:'Their Home', text:'The Votadini built wooden roundhouses on the rock. They had fires burning, animals, and entire families living 80 metres above the city below.'},
+{icon:'👶', title:'Their Children', text:'Celtic children grew up on this rock. They played on the steep volcanic sides. They heard stories of monsters in the valleys below. This was their whole world.'}
+]
 },
 {
- title:"YOUR PIECE OF HISTORY",
- subtitle:"Edinburgh Castle lives in your home now",
- image:"./castle.jpg",
- color:"#c8a951",
- story:"2 million visitors walk these cobblestones each year. Every August, bagpipes fill the air. And now — a little piece of this magnificent castle belongs to you.",
- speech:"Today… Edinburgh Castle welcomes over two million visitors every year. People come to walk the same cobblestones that kings once walked. Every August… the famous Royal Edinburgh Military Tattoo fills the castle with the sound of bagpipes and drums. The castle glows in the darkness. And now… a little piece of this castle… belongs to you. In your Tins Tale UK tin… you have an embroidered Edinburgh Castle motif — wear it with pride. You have native Scottish wildflower seeds — plant them and watch Scotland bloom in your home. History is not just something in a book. It is something you can hold in your hands… grow in your home… and wear on your heart. Thank you… for journeying with Tins Tale UK today. Your reward… is waiting for you now. Enjoy it — you have earned it."
+file:'./shot5.mp4', duration:18,
+label:'Chapter 5 — Castle Rises',
+type:'counter',
+counter:{from:1130, to:2024, label:'Years of History', suffix:'AD'}
+},
+{
+file:'./shot6.mp4', duration:18,
+label:'Chapter 6 — Four Metres Thick',
+type:'popup',
+btn:'⛪ Open the Chapel',
+popup:{icon:'⛪', title:"St Margaret's Chapel",
+text:"Built in 1130 by King David I in memory of his mother Saint Margaret. It is the oldest surviving building in Edinburgh. Every Friday, fresh wildflowers are placed inside — a tradition that continues today."}
+},
+{
+file:'./shot7.mp4', duration:16,
+label:'Chapter 7 — 2 Million Visitors',
+type:'popup',
+btn:'🗺️ See the View',
+popup:{icon:'🗺️', title:'What They See From The Top',
+text:"From Edinburgh Castle you can see: Arthur's Seat volcano, the Royal Mile leading to Holyrood Palace, the Firth of Forth, and on a clear day — the Scottish Highlands 50 miles away."}
+},
+{
+file:'./shot8.mp4', duration:21,
+label:'Chapter 8 — 37 Generations',
+type:'counter',
+counter:{from:1, to:37, label:'Generations of Builders', suffix:''}
 }
 ];
 
-let current=0,isPaused=false,chapterTimer=null,progressElapsed=0,progressStart=null,isRunning=false,storyStarted=false;
-const DURATIONS=[22000,22000,22000,24000,26000];
+const totalDuration = shots.reduce((a,s)=>a+s.duration,0);
+let currentShot = 0;
+let elapsedTotal = 0;
+let timerInterval = null;
+let counterInterval = null;
+let currentPopupData = null;
+let currentDotData = null;
 
-function speak(text){
- if(!window.speechSynthesis)return;
- window.speechSynthesis.cancel();
- const u=new SpeechSynthesisUtterance(text);
- u.lang='en-GB';u.rate=0.78;u.pitch=1.05;u.volume=1.0;
- const voices=window.speechSynthesis.getVoices();
- const preferred=voices.find(v=>v.lang.startsWith('en')&&(
- v.name.includes('Samantha')||v.name.includes('Karen')||
- v.name.includes('Moira')||v.name.includes('Serena')||
- v.name.includes('Martha')||v.name.includes('Kate')
- ))||voices.find(v=>v.lang.startsWith('en-GB'))||voices.find(v=>v.lang.startsWith('en'));
- if(preferred)u.voice=preferred;
- window.speechSynthesis.speak(u);
+// ── START ──
+function startStory(){
+document.getElementById('splash').style.display='none';
+document.getElementById('scene').style.display='block';
+document.getElementById('ch-label').style.display='block';
+document.getElementById('timer-bar').style.display='block';
+loadShot(0);
 }
 
-function beginExperience(){
- document.getElementById('start-screen').style.display='none';
- document.getElementById('scan-msg').style.display='block';
- storyStarted=true;
- if(window.speechSynthesis){
- window.speechSynthesis.getVoices();
- window.speechSynthesis.speak(new SpeechSynthesisUtterance(''));
- }
+// ── LOAD SHOT ──
+function loadShot(i){
+if(i >= shots.length){ showShot9(); return; }
+currentShot = i;
+const s = shots[i];
+
+// Progress
+document.getElementById('prog-fill').style.width=((elapsedTotal/totalDuration)*100)+'%';
+document.getElementById('ch-label').textContent='🏰 '+s.label;
+
+// Reset all interactions
+hideAll();
+
+// Load video
+const vid=document.getElementById('bg-video');
+vid.src=s.file;
+vid.load();
+vid.play().catch(()=>{});
+
+// Timer bar
+startTimer(s.duration);
+
+// Show interaction after 3 seconds
+setTimeout(()=>{ showInteraction(s); }, 3000);
 }
 
-function loadChapter(index){
- if(index>=chapters.length){showReward();return;}
- current=index;
- const ch=chapters[index];
- const dur=DURATIONS[index];
- document.getElementById('chapter-badge').textContent=`Part ${index+1} of 5`;
- const img=document.getElementById('scene-image');
- img.style.animation='none';
- img.src=ch.image;
- setTimeout(()=>{img.style.animation='kenburns 25s ease-in-out forwards';},50);
- document.getElementById('chapter-title').textContent=ch.title;
- document.getElementById('chapter-title').style.color=ch.color;
- document.getElementById('subtitle').textContent=ch.subtitle;
- document.getElementById('story-text').textContent=ch.story;
- const fill=document.getElementById('progress-fill');
- fill.style.transition='none';fill.style.width='0%';fill.style.background=ch.color;
- progressElapsed=0;progressStart=Date.now();
- setTimeout(()=>{fill.style.transition=`width ${dur}ms linear`;fill.style.width='100%';},100);
- speak(ch.speech);
- clearTimeout(chapterTimer);
- chapterTimer=setTimeout(()=>loadChapter(current+1),dur);
- isPaused=false;
- document.getElementById('play-btn').textContent=' ';
+// ── SHOW INTERACTION ──
+function showInteraction(s){
+if(s.type==='popup'){
+currentPopupData = s.popup;
+const btn=document.getElementById('tap-btn');
+btn.textContent = s.btn || '✨ Discover More';
+btn.style.display='block';
 }
-
-function togglePause(){
- const dur=DURATIONS[current];
- if(isPaused){
- isPaused=false;
- document.getElementById('play-btn').textContent=' ';
- window.speechSynthesis.resume();
- const remaining=dur-progressElapsed;
- chapterTimer=setTimeout(()=>loadChapter(current+1),remaining);
- const fill=document.getElementById('progress-fill');
- fill.style.transition=`width ${remaining}ms linear`;fill.style.width='100%';
- }else{
- isPaused=true;
- document.getElementById('play-btn').textContent=' ';
- window.speechSynthesis.pause();
- progressElapsed=Date.now()-progressStart;
- clearTimeout(chapterTimer);
- const fill=document.getElementById('progress-fill');
- fill.style.transition='none';
- fill.style.width=((progressElapsed/dur)*100)+'%';
- }
+else if(s.type==='xray'){
+currentPopupData = s.popup;
+document.getElementById('xray-btn').style.display='block';
 }
-
-function nextChapter(){clearTimeout(chapterTimer);window.speechSynthesis&&window.speechSynthesis.cancel();loadChapter(current+1);}
-function prevChapter(){clearTimeout(chapterTimer);window.speechSynthesis&&window.speechSynthesis.cancel();loadChapter(Math.max(0,current-1));}
-
-function showReward(){
- window.speechSynthesis&&window.speechSynthesis.cancel();
- document.getElementById('film').style.display='none';
- document.getElementById('reward').style.display='flex';
- setTimeout(()=>{speak("Your reward is waiting for you now. Use code DESTINY fifteen at checkout for fifteen percent off your next Tins Tale UK tin. Thank you… for journeying with us today.");},800);
-}
-
-function replayStory(){
- document.getElementById('reward').style.display='none';
- document.getElementById('film').style.display='flex';
- loadChapter(0);
-}
-
-function startFilm(){
- if(isRunning||!storyStarted)return;
- isRunning=true;
- document.getElementById('scan-msg').style.display='none';
- document.getElementById('film').style.display='flex';
- loadChapter(0);
-}
-
-document.querySelector('a-scene').addEventListener('loaded',function(){
- setTimeout(()=>{
- document.getElementById('loading').style.display='none';
- document.getElementById('start-screen').style.display='flex';
- },2000);
+else if(s.type==='dots'){
+currentDotData = s.dots;
+['dot1','dot2','dot3'].forEach(id=>{
+const d=document.getElementById(id);
+d.style.display='flex';
 });
-
-if(window.speechSynthesis){
- window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();
+}
+else if(s.type==='counter'){
+runCounter(s.counter);
+}
 }
 
-const target=document.querySelector('[mindar-image-target]');
-target.addEventListener('targetFound',startFilm);
+// ── POPUP ──
+function showPopup(){
+if(!currentPopupData) return;
+const p=currentPopupData;
+document.getElementById('pop-icon').textContent=p.icon;
+document.getElementById('pop-title').textContent=p.title;
+document.getElementById('pop-text').textContent=p.text;
+document.getElementById('popup').classList.add('show');
+}
+function closePopup(){
+document.getElementById('popup').classList.remove('show');
+}
+
+// ── X-RAY ──
+function activateXray(){
+document.getElementById('xray-btn').style.display='none';
+document.getElementById('xray-overlay').style.display='block';
+document.getElementById('xray-lines').style.display='block';
+setTimeout(()=>{ showPopup(); }, 800);
+}
+
+// ── DOTS ──
+function showDotPopup(i){
+if(!currentDotData) return;
+const d=currentDotData[i];
+currentPopupData={icon:d.icon, title:d.title, text:d.text};
+showPopup();
+}
+
+// ── COUNTER ──
+function runCounter(c){
+clearInterval(counterInterval);
+const wrap=document.getElementById('counter-wrap');
+const numEl=document.getElementById('counter-num');
+const lblEl=document.getElementById('counter-lbl');
+lblEl.textContent=c.label;
+wrap.style.display='block';
+let current=c.from;
+numEl.textContent=current+(c.suffix||'');
+const range=c.to-c.from;
+const step=Math.ceil(range/60);
+counterInterval=setInterval(()=>{
+current=Math.min(current+step,c.to);
+numEl.textContent=current+(c.suffix||'');
+if(current>=c.to){ clearInterval(counterInterval); }
+},50);
+}
+
+// ── VIDEO ENDED ──
+function onVideoEnd(){
+clearInterval(timerInterval);
+clearInterval(counterInterval);
+elapsedTotal+=shots[currentShot].duration;
+hideAll();
+loadShot(currentShot+1);
+}
+
+// ── SHOT TIMER ──
+function startTimer(dur){
+clearInterval(timerInterval);
+const fill=document.getElementById('timer-fill');
+fill.style.transition='none';
+fill.style.width='100%';
+setTimeout(()=>{
+fill.style.transition=`width ${dur}s linear`;
+fill.style.width='0%';
+},80);
+let elapsed=0;
+timerInterval=setInterval(()=>{
+elapsed++;
+const pct=Math.min(((elapsedTotal+elapsed)/totalDuration)*100,96);
+document.getElementById('prog-fill').style.width=pct+'%';
+if(elapsed>=dur) clearInterval(timerInterval);
+},1000);
+}
+
+// ── HIDE ALL ──
+function hideAll(){
+document.getElementById('tap-btn').style.display='none';
+document.getElementById('xray-btn').style.display='none';
+document.getElementById('xray-overlay').style.display='none';
+document.getElementById('xray-lines').style.display='none';
+document.getElementById('counter-wrap').style.display='none';
+['dot1','dot2','dot3'].forEach(id=>{ document.getElementById(id).style.display='none'; });
+document.getElementById('popup').classList.remove('show');
+clearInterval(counterInterval);
+}
+
+// ── SHOT 9 ──
+function showShot9(){
+document.getElementById('scene').style.display='none';
+document.getElementById('prog-fill').style.width='96%';
+document.getElementById('shot9').classList.add('show');
+}
+function revealTinText(){
+document.getElementById('shot9').classList.remove('show');
+document.getElementById('shot9-txt').classList.add('show');
+document.getElementById('prog-fill').style.width='99%';
+}
+
+// ── REWARD ──
+function launchReward(){
+document.getElementById('shot9-txt').classList.remove('show');
+document.getElementById('prog-fill').style.width='100%';
+launchConfetti();
+setTimeout(()=>{
+document.getElementById('reward').classList.add('show');
+launchConfetti();
+}, 900);
+}
+
+// ── CONFETTI ──
+function launchConfetti(){
+const colors=['#c8a951','#fff8a0','#ffffff','#e0c97a','#ffdd44','#ff9f43','#48dbfb'];
+for(let i=0;i<70;i++){
+const c=document.createElement('div');c.className='cf';
+const sz=Math.random()*10+5;
+c.style.cssText=`width:${sz}px;height:${sz*0.4}px;left:${Math.random()*100}%;top:-10px;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${2.5+Math.random()*3}s;animation-delay:${Math.random()*1.5}s;`;
+document.body.appendChild(c);
+setTimeout(()=>c.remove(),6000);
+}
+}
 </script>
+
 </body>
 </html>
