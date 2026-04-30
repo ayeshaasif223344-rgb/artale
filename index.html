@@ -1,75 +1,39 @@
+cat > /home/claude/simple_ar.html << 'HTMLEOF'
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-<title>TaleCode UK — Edinburgh Castle</title>
-
-<!-- MindAR + Three.js -->
-
-<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image.prod.js"></script>
-
+<title>TinsTale — Edinburgh Castle</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+*{margin:0;padding:0;box-sizing:border-box;}
 body{background:#000;font-family:Georgia,serif;overflow:hidden;height:100vh;width:100vw;color:#fff;}
-
-.stars{position:fixed;inset:0;pointer-events:none;z-index:0;}
-.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle 3s infinite;}
-@keyframes twinkle{0%,100%{opacity:.1}50%{opacity:.8}}
-@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
-@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(200,169,81,.4)}50%{box-shadow:0 0 60px rgba(200,169,81,1)}}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(200,169,81,.4)}50%{box-shadow:0 0 55px rgba(200,169,81,.9)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes scanMove{0%{top:20%}100%{top:78%}}
+@keyframes fall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+@keyframes dotFloat{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+@keyframes numGlow{from{text-shadow:0 0 20px rgba(200,169,81,.5)}to{text-shadow:0 0 70px rgba(200,169,81,1)}}
+@keyframes xGlow{0%,100%{opacity:.6}50%{opacity:1}}
 
 /* SPLASH */
 #splash{position:fixed;inset:0;z-index:1000;background:linear-gradient(160deg,#0d1b3e,#1a0a0a);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;}
-.sp-icon{font-size:72px;animation:floatY 3s ease-in-out infinite;margin-bottom:16px;filter:drop-shadow(0 0 20px rgba(200,169,81,.6));}
+.sp-icon{font-size:72px;animation:floatY 3s ease-in-out infinite;margin-bottom:16px;}
 .sp-title{font-size:30px;color:#c8a951;letter-spacing:4px;margin-bottom:6px;}
 .sp-sub{font-size:14px;color:#aaa;margin-bottom:6px;}
-.sp-tag{font-size:16px;color:#e0c97a;font-style:italic;margin-bottom:10px;}
-.sp-dur{background:rgba(200,169,81,.12);border:1px solid rgba(200,169,81,.3);border-radius:20px;padding:8px 20px;font-size:13px;color:#c8a951;margin-bottom:32px;letter-spacing:1px;}
-#start-btn{background:linear-gradient(135deg,#c8a951,#a07830);color:#0d1b3e;border:none;padding:18px 50px;font-size:20px;font-weight:bold;border-radius:50px;cursor:pointer;letter-spacing:2px;animation:glow 2s ease-in-out infinite;-webkit-appearance:none;}
+.sp-tag{font-size:15px;color:#e0c97a;font-style:italic;margin-bottom:10px;}
+.sp-hint{background:rgba(200,169,81,.1);border:1px solid rgba(200,169,81,.3);border-radius:16px;padding:14px 20px;font-size:13px;color:#c8a951;margin-bottom:28px;line-height:1.8;}
+#start-btn{background:linear-gradient(135deg,#c8a951,#a07830);color:#0d1b3e;border:none;padding:16px 44px;font-size:18px;font-weight:bold;border-radius:50px;cursor:pointer;letter-spacing:2px;animation:glow 2s ease-in-out infinite;-webkit-appearance:none;}
 
-/* AR GUIDE */
-#ar-guide{display:none;position:fixed;inset:0;z-index:900;background:linear-gradient(160deg,#050810,#0d1b3e);flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;}
-#ar-guide.show{display:flex;}
-.guide-icon{font-size:70px;margin-bottom:20px;animation:floatY 3s ease-in-out infinite;}
-.guide-title{font-size:22px;color:#c8a951;margin-bottom:18px;letter-spacing:2px;}
-.guide-steps{text-align:left;max-width:320px;margin:0 auto 28px;}
-.guide-step{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;background:rgba(200,169,81,.07);border:1px solid rgba(200,169,81,.2);border-radius:12px;padding:12px 16px;}
-.gs-num{font-size:18px;color:#c8a951;font-weight:700;min-width:24px;}
-.gs-txt{font-size:14px;color:#ccc;line-height:1.6;}
-.guide-btn{background:linear-gradient(135deg,#c8a951,#a07830);color:#0d1b3e;border:none;padding:15px 42px;font-size:16px;font-weight:700;border-radius:50px;cursor:pointer;letter-spacing:2px;animation:glow 2s ease-in-out infinite;-webkit-appearance:none;}
-
-/* MindAR container */
-#mindar-container{display:none;position:fixed;inset:0;z-index:1;}
-
-/* SCAN OVERLAY — shown while waiting for marker */
-#scan-overlay{display:none;position:fixed;inset:0;z-index:2;pointer-events:none;}
-.scan-corner{position:absolute;width:70px;height:70px;border-color:#c8a951;border-style:solid;opacity:.8;}
-.sc-tl{top:18%;left:8%;border-width:3px 0 0 3px;}
-.sc-tr{top:18%;right:8%;border-width:3px 3px 0 0;}
-.sc-bl{bottom:18%;left:8%;border-width:0 0 3px 3px;}
-.sc-br{bottom:18%;right:8%;border-width:0 3px 3px 0;}
-.scan-line{position:absolute;left:8%;right:8%;height:2px;background:linear-gradient(90deg,transparent,#c8a951,transparent);animation:scanMove 2.5s ease-in-out infinite;}
-#scan-hint{position:absolute;bottom:10%;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.8);border:1px solid rgba(200,169,81,.4);border-radius:20px;padding:10px 24px;color:#c8a951;font-size:12px;letter-spacing:2px;white-space:nowrap;text-align:center;}
-
-/* DETECTED FLASH */
-#detect-flash{position:fixed;inset:0;z-index:3;background:rgba(200,169,81,.3);pointer-events:none;opacity:0;transition:opacity .3s;}
-
-/* STORY UI */
-#story-ui{display:none;position:fixed;inset:0;z-index:5;}
-
-/* VIDEO */
-#bg-vid{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;display:block;}
+/* VIDEO BG */
+#bg-vid{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;display:none;}
 .bg-ov{position:fixed;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,.3) 0%,transparent 25%,transparent 55%,rgba(0,0,0,.8) 100%);}
 
 /* PROGRESS */
-#prog{position:fixed;top:0;left:0;right:0;height:5px;background:rgba(255,255,255,.1);z-index:300;}
+#prog{position:fixed;top:0;left:0;right:0;height:5px;background:rgba(255,255,255,.1);z-index:300;display:none;}
 #prog-fill{height:100%;background:linear-gradient(90deg,#c8a951,#fff8a0);width:0%;transition:width .5s;}
-#ch-label{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:300;background:rgba(10,20,50,.9);border:1px solid rgba(200,169,81,.5);border-radius:30px;padding:7px 20px;color:#c8a951;font-size:11px;letter-spacing:2px;white-space:nowrap;text-transform:uppercase;}
-#timer-bar{position:fixed;top:24px;left:0;right:0;height:3px;background:rgba(255,255,255,.06);z-index:299;}
+#ch-label{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:300;background:rgba(10,20,50,.9);border:1px solid rgba(200,169,81,.5);border-radius:30px;padding:7px 20px;color:#c8a951;font-size:11px;letter-spacing:2px;white-space:nowrap;display:none;text-transform:uppercase;}
+#timer-bar{position:fixed;top:24px;left:0;right:0;height:3px;background:rgba(255,255,255,.06);z-index:299;display:none;}
 #timer-fill{height:100%;background:rgba(200,169,81,.5);width:100%;}
 
 /* BUTTONS */
@@ -79,20 +43,17 @@ body{background:#000;font-family:Georgia,serif;overflow:hidden;height:100vh;widt
 
 /* XRAY */
 #xray-ov{position:fixed;inset:0;z-index:4;display:none;pointer-events:none;background:radial-gradient(ellipse at center,rgba(0,80,255,.3),rgba(0,200,255,.1) 40%,transparent 70%);animation:xGlow 2s ease-in-out infinite;}
-@keyframes xGlow{0%,100%{opacity:.6}50%{opacity:1}}
 #xray-lines{position:fixed;inset:0;z-index:5;pointer-events:none;display:none;background:repeating-linear-gradient(0deg,transparent,transparent 8px,rgba(0,180,255,.07) 8px,rgba(0,180,255,.07) 9px);}
 
 /* DOTS */
 .dot{position:fixed;z-index:310;width:48px;height:48px;border-radius:50%;display:none;align-items:center;justify-content:center;font-size:22px;cursor:pointer;animation:dotFloat 2s ease-in-out infinite;border:2px solid rgba(255,255,255,.7);box-shadow:0 0 20px rgba(255,255,255,.3);}
-@keyframes dotFloat{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(1.15) translateY(-7px)}}
 #dot1{top:33%;left:14%;background:rgba(200,169,81,.45);}
 #dot2{top:50%;left:64%;background:rgba(68,136,255,.45);animation-delay:.4s;}
 #dot3{top:66%;left:34%;background:rgba(68,200,120,.45);animation-delay:.8s;}
 
 /* COUNTER */
 #ctr-wrap{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:310;text-align:center;display:none;pointer-events:none;}
-.ctr-num{font-size:86px;font-weight:900;color:#c8a951;line-height:1;text-shadow:0 0 40px rgba(200,169,81,.9);animation:numGlow 1s ease-in-out infinite alternate;}
-@keyframes numGlow{from{text-shadow:0 0 20px rgba(200,169,81,.5)}to{text-shadow:0 0 70px rgba(200,169,81,1)}}
+.ctr-num{font-size:86px;font-weight:900;color:#c8a951;line-height:1;animation:numGlow 1s ease-in-out infinite alternate;}
 .ctr-lbl{font-size:13px;color:#e0c97a;letter-spacing:3px;text-transform:uppercase;margin-top:10px;}
 
 /* POPUP */
@@ -107,10 +68,9 @@ body{background:#000;font-family:Georgia,serif;overflow:hidden;height:100vh;widt
 /* SHOT 9 */
 #shot9{display:none;position:fixed;inset:0;z-index:50;background:radial-gradient(ellipse at center,#0d1b3e,#050810 80%);flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;cursor:pointer;}
 #shot9.show{display:flex;}
-.tin-wrap{width:min(72vw,300px);height:min(72vw,300px);animation:floatY 4s ease-in-out infinite;border-radius:50%;box-shadow:0 0 70px rgba(200,169,81,.5);border:3px solid rgba(200,169,81,.4);overflow:hidden;background:#1a2a4a;display:flex;align-items:center;justify-content:center;}
+.tin-wrap{width:min(72vw,300px);height:min(72vw,300px);animation:floatY 4s ease-in-out infinite;border-radius:20px;box-shadow:0 0 70px rgba(200,169,81,.5);border:2px solid rgba(200,169,81,.4);overflow:hidden;background:#1a2a4a;display:flex;align-items:center;justify-content:center;}
 .tin-wrap img{width:100%;height:100%;object-fit:cover;}
 .tin-hint{margin-top:20px;font-size:14px;color:#c8a951;letter-spacing:2px;animation:glow 2s ease-in-out infinite;}
-
 #shot9-txt{display:none;position:fixed;inset:0;z-index:55;background:rgba(0,0,0,.94);flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px 24px;}
 #shot9-txt.show{display:flex;animation:fadeIn .6s ease;}
 .s9-icon{font-size:52px;margin-bottom:14px;animation:floatY 3s ease-in-out infinite;}
@@ -136,320 +96,183 @@ body{background:#000;font-family:Georgia,serif;overflow:hidden;height:100vh;widt
 .nxt-box p{font-size:13px;color:#aaa;line-height:1.7;}
 .nxt-box strong{color:#c8a951;}
 .cf{position:fixed;pointer-events:none;z-index:700;border-radius:2px;animation:fall linear forwards;}
-@keyframes fall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
 </style>
-
 </head>
 <body>
 
-<div class="stars" id="stars"></div>
-
 <!-- SPLASH -->
-
 <div id="splash">
- <div class="sp-icon"> </div>
- <div class="sp-title">TINSTALE</div>
- <div class="sp-sub">Edinburgh Castle — Heritage Story</div>
- <div class="sp-tag">"340 million years of history — just for you."</div>
- <div class="sp-dur"> 2 min 23 sec &nbsp;•&nbsp; 9 Chapters &nbsp;•&nbsp; Turn volume up!</div>
- <button id="start-btn"> Begin the Story</button>
+<div class="sp-icon"> </div>
+<div class="sp-title">TINSTALE</div>
+<div class="sp-sub">Edinburgh Castle — Heritage Story</div>
+<div class="sp-tag">"340 million years of history — just for you."</div>
+<div class="sp-hint">
+ Turn volume up!<br/>
+9 Chapters • 2 min 23 sec<br/>
+ Interactive AR Experience
+</div>
+<button id="start-btn"> Begin the Story</button>
 </div>
 
-<!-- AR GUIDE -->
-
-<div id="ar-guide">
- <div class="guide-icon"> </div>
- <div class="guide-title">HOW TO START</div>
- <div class="guide-steps">
- <div class="guide-step"><div class="gs-num">1</div><div class="gs-txt">Allow camera access when asked</div></div>
- <div class="guide-step"><div class="gs-num">2</div><div class="gs-txt">Hold your <strong style="color:#c8a951">TINSTALE tin</strong> in front of you</div></div>
- <div class="guide-step"><div class="gs-num">3</div><div class="gs-txt">Point your camera at the <strong style="color:#c8a951">Edinburgh Castle</strong> image on the lid</div></div>
- <div class="guide-step"><div class="gs-num">4</div><div class="gs-txt">Hold steady — your story begins! </div></div>
- </div>
- <button class="guide-btn" id="open-camera-btn"> Open Camera</button>
-</div>
-
-<!-- MindAR container (camera renders here) -->
-
-<div id="mindar-container"></div>
-
-<!-- SCAN OVERLAY -->
-
-<div id="scan-overlay">
- <div class="scan-corner sc-tl"></div>
- <div class="scan-corner sc-tr"></div>
- <div class="scan-corner sc-bl"></div>
- <div class="scan-corner sc-br"></div>
- <div class="scan-line"></div>
- <div id="scan-hint"> POINT AT YOUR TINSTALE TIN LID</div>
-</div>
-
-<div id="detect-flash"></div>
-
-<!-- STORY UI -->
-
-<div id="story-ui">
- <video id="bg-vid" playsinline webkit-playsinline autoplay></video>
- <div class="bg-ov"></div>
- <div id="prog"><div id="prog-fill"></div></div>
- <div id="ch-label"></div>
- <div id="timer-bar"><div id="timer-fill"></div></div>
- <div id="xray-ov"></div>
- <div id="xray-lines"></div>
- <div class="dot" id="dot1"> </div>
- <div class="dot" id="dot2"> </div>
- <div class="dot" id="dot3"> </div>
- <div id="ctr-wrap"><div class="ctr-num" id="ctr-num">0</div><div class="ctr-lbl" id="ctr-lbl"></div></div>
- <button id="tap-btn"></button>
- <button id="xray-btn"> X-Ray View</button>
- <button id="next-btn">Next Chapter </button>
-</div>
+<!-- VIDEO -->
+<video id="bg-vid" playsinline webkit-playsinline></video>
+<div class="bg-ov"></div>
+<div id="prog"><div id="prog-fill"></div></div>
+<div id="ch-label"></div>
+<div id="timer-bar"><div id="timer-fill"></div></div>
+<div id="xray-ov"></div>
+<div id="xray-lines"></div>
+<div class="dot" id="dot1"> </div>
+<div class="dot" id="dot2"> </div>
+<div class="dot" id="dot3"> </div>
+<div id="ctr-wrap"><div class="ctr-num" id="ctr-num">0</div><div class="ctr-lbl" id="ctr-lbl"></div></div>
+<button id="tap-btn"></button>
+<button id="xray-btn"> X-Ray View</button>
+<button id="next-btn">Next Chapter </button>
 
 <!-- POPUP -->
-
 <div id="popup">
- <div class="pop-icon" id="pop-icon"></div>
- <div class="pop-title" id="pop-title"></div>
- <div class="pop-div"></div>
- <div class="pop-text" id="pop-text"></div>
- <button class="pop-close" id="pop-close">Continue </button>
+<div class="pop-icon" id="pop-icon"></div>
+<div class="pop-title" id="pop-title"></div>
+<div class="pop-div"></div>
+<div class="pop-text" id="pop-text"></div>
+<button class="pop-close" id="pop-close">Continue </button>
 </div>
 
 <!-- SHOT 9 -->
-
 <div id="shot9">
- <div class="tin-wrap">
- <img src="./tin.jpg" alt="TaleCode UK Tin"
- onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\'font-size:80px;display:flex;align-items:center;justify-content:center;height:100%;\'> </div>'"/>
- </div>
- <div class="tin-hint"> Tap to reveal your story </div>
+<div class="tin-wrap">
+<img src="./tin.jpg" alt="TinsTale Heritage Tin"
+onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\'font-size:80px;display:flex;align-items:center;justify-content:center;height:100%;\'> </div>'"/>
+</div>
+<div class="tin-hint"> Tap to reveal your story </div>
 </div>
 
 <div id="shot9-txt">
- <div class="s9-icon"> </div>
- <h2 class="s9-title">Your Heritage.<br/>Your Story.</h2>
- <div class="s9-div"></div>
- <p class="s9-body">And now, my dear... a little piece of this <span class="hl">340 million year old mountain</span> belongs to you.<br/><br/>The <span class="hl">embroidered patch</span> carries its story. The <span class="hl">puzzle</span> holds its image. The <span class="hl">magnet</span> keeps it in your home every day.<br/><br/><span class="hl">Din Eidyn</span> — the ancient fortress — lives on in your hands.</p>
- <button class="s9-btn" id="reward-btn"> Claim Your Reward</button>
+<div class="s9-icon"> </div>
+<h2 class="s9-title">Your Heritage.<br/>Your Story.</h2>
+<div class="s9-div"></div>
+<p class="s9-body">And now, my dear... a little piece of this <span class="hl">340 million year old mountain</span> belongs to you.<br/><br/>The <span class="hl">embroidered patch</span> carries its story. The <span class="hl">puzzle</span> holds its image. The <span class="hl">magnet</span> keeps it in your home every day.<br/><br/><span class="hl">Din Eidyn</span> — the ancient fortress — lives on in your hands.</p>
+<button class="s9-btn" id="reward-btn"> Claim Your Reward</button>
 </div>
 
 <!-- REWARD -->
-
 <div id="reward">
- <div class="r-icon"> </div>
- <h2 class="r-title">You Did It, Explorer!</h2>
- <p class="r-sub">Your reward is unlocked</p>
- <div class="code-card">
- <div class="c-lbl">Your Exclusive Discount Code</div>
- <div class="c-val">DESTINY15</div>
- <div class="c-pct">15% off your next TaleCode UK kit</div>
- </div>
- <p class="r-msg">Use code <strong style="color:#c8a951">DESTINY15</strong> at checkout on Etsy!</p>
- <button class="shop-btn" id="shop-btn">Shop Now on Etsy →</button>
- <div class="nxt-box"><p><strong> Coming — Scottish Highlands Edition</strong><br/>The Stag. The Glen. The Thistle.<br/><strong>Launching very soon!</strong></p></div>
+<div class="r-icon"> </div>
+<h2 class="r-title">You Did It, Explorer!</h2>
+<p class="r-sub">Your reward is unlocked</p>
+<div class="code-card">
+<div class="c-lbl">Your Exclusive Discount Code</div>
+<div class="c-val">DESTINY15</div>
+<div class="c-pct">15% off your next TinsTale kit</div>
+</div>
+<p class="r-msg">Use code <strong style="color:#c8a951">DESTINY15</strong> at checkout on Etsy!</p>
+<button class="shop-btn" id="shop-btn">Shop Now on Etsy →</button>
+<div class="nxt-box"><p><strong> Coming — Scottish Highlands Edition</strong><br/>The Stag. The Glen. The Thistle.<br/><strong>Launching very soon!</strong></p></div>
 </div>
 
 <script>
-// STARS
-const starsEl=document.getElementById('stars');
-for(let i=0;i<80;i++){
- const s=document.createElement('div');s.className='star';
- const sz=Math.random()*2+.4;
- s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation-delay:${Math.random()*4}s;animation-duration:${2+Math.random()*4}s`;
- starsEl.appendChild(s);
-}
-
-// CLOUDINARY
 const CLOUD='dttbmhjno';
 const BASE=`https://res.cloudinary.com/${CLOUD}/video/upload`;
-function cld(id){ return `${BASE}/${id}.mp4`; }
+const cld=id=>`${BASE}/${id}.mp4`;
 
-// SHOTS DATA
 const shots=[
- {video:cld('Shot1'),duration:14,interactAt:3,label:'Chapter 1 — Din Eidyn',type:'popup',btn:' Discover Din Eidyn',popup:{icon:' ',title:'Din Eidyn — The Original Name',text:'The name Din Eidyn comes from ancient Celtic language. "Din" means fortress. "Eidyn" was the name of this hilltop. This ancient name eventually became... Edinburgh.'}},
- {video:cld('copy_4373858E-FF86-48B2-BB1F-AF5D5CCDD6CC_o9p9mv'),duration:18,interactAt:3,label:'Chapter 2 — The Volcano',type:'popup',btn:' Discover the Volcano',popup:{icon:' ',title:'Born From Fire',text:'Castle Rock was formed by a massive volcanic eruption 340 million years ago. The lava cooled into incredibly hard basalt rock — making it the strongest natural fortress in Britain.'}},
- {video:cld('copy_65038CD0-3389-4437-AC30-EEE9F2D16FC6_o5qkvm'),duration:16,interactAt:3,label:'Chapter 3 — The Votadini',type:'dots',dots:[{icon:' ',title:'Their King',text:'The Votadini king ruled from this hilltop — the Lord of Din Eidyn — looking down over all of Scotland.'},{icon:' ',title:'Their Home',text:'The Votadini built wooden roundhouses on the rock. Entire families lived 80 metres above the city.'},{icon:' ',title:'Their Children',text:'Celtic children grew up on this rock, playing on the steep volcanic sides, hearing stories of monsters below.'}]},
- {video:cld('copy_7296293F-A303-44C3-A42F-5F9E76F30856_yqser7'),duration:21,interactAt:3,label:'Chapter 4 — Sleeping Below',type:'xray',popup:{icon:' ',title:'The Sleeping Giant',text:'Scientists have confirmed a magma chamber still exists deep below Edinburgh. Dormant for 350 million years. The castle literally sits on top of a sleeping volcano!'}},
- {video:cld('copy_9914F716-2EB7-4410-BC87-4A73FFD92B1B_ynsntq'),duration:18,interactAt:3,label:'Chapter 5 — Castle Rises',type:'counter',counter:{from:1130,to:2024,label:'Years of History'}},
- {video:cld('copy_D65EEFDA-DD4B-4E04-920A-7D13C4A33C4A_oaqv0l'),duration:18,interactAt:3,label:'Chapter 6 — Four Metres Thick',type:'popup',btn:' Open the Chapel',popup:{icon:' ',title:"St Margaret's Chapel",text:"Built in 1130 by King David I. The oldest surviving building in Edinburgh. Every Friday, fresh wildflowers are placed inside — a tradition continuing today."}},
- {video:cld('copy_B657BCCD-0A97-4614-914C-E084C169741F_of8dwv'),duration:16,interactAt:3,label:'Chapter 7 — 2 Million Visitors',type:'popup',btn:' See the View',popup:{icon:' ',title:'What They See From The Top',text:"From Edinburgh Castle: Arthur's Seat volcano, the Royal Mile, the Firth of Forth, and on a clear day — the Scottish Highlands 50 miles away."}},
- {video:cld('copy_00BB93BA-F91B-416A-B330-9326F6C99868_rujq8g'),duration:21,interactAt:3,label:'Chapter 8 — 37 Generations',type:'counter',counter:{from:1,to:37,label:'Generations of Builders'}}
+{video:cld('Shot1'),duration:14,label:'Chapter 1 — Din Eidyn',
+type:'popup',btn:' Discover Din Eidyn',
+popup:{icon:' ',title:'Din Eidyn — The Original Name',
+text:'The name Din Eidyn comes from ancient Celtic language. "Din" means fortress. "Eidyn" was this hilltop\'s name. It eventually became... Edinburgh.'}},
+{video:cld('copy_4373858E-FF86-48B2-BB1F-AF5D5CCDD6CC_o9p9mv'),duration:19,label:'Chapter 2 — The Volcano',
+type:'popup',btn:' Discover the Volcano',
+popup:{icon:' ',title:'Born From Fire',
+text:'Castle Rock was formed by a massive volcanic eruption 340 million years ago. The lava cooled into incredibly hard basalt rock — the strongest natural fortress in Britain.'}},
+{video:cld('copy_65038CD0-3389-4437-AC30-EEE9F2D16FC6_o5qkvm'),duration:21,label:'Chapter 3 — Sleeping Below',
+type:'xray',
+popup:{icon:' ',title:'The Sleeping Giant',
+text:'A magma chamber still exists deep below Edinburgh. Dormant for 350 million years. The castle literally sits on top of a sleeping volcano!'}},
+{video:cld('copy_7296293F-A303-44C3-A42F-5F9E76F30856_yqser7'),duration:16,label:'Chapter 4 — The Votadini',
+type:'dots',
+dots:[
+{icon:' ',title:'Their King',text:'The Votadini king ruled from this hilltop — the Lord of Din Eidyn — looking down over all of Scotland.'},
+{icon:' ',title:'Their Home',text:'Wooden roundhouses on the rock. Entire families lived 80 metres above the city.'},
+{icon:' ',title:'Their Children',text:'Celtic children grew up here, playing on steep volcanic sides, hearing stories of monsters below.'}
+]},
+{video:cld('copy_9914F716-2EB7-4410-BC87-4A73FFD92B1B_ynsntq'),duration:18,label:'Chapter 5 — Castle Rises',
+type:'counter',counter:{from:1130,to:2024,label:'Years of History'}},
+{video:cld('copy_D65EEFDA-DD4B-4E04-920A-7D13C4A33C4A_oaqv0l'),duration:18,label:'Chapter 6 — Four Metres Thick',
+type:'popup',btn:' Open the Chapel',
+popup:{icon:' ',title:"St Margaret's Chapel",
+text:"Built in 1130 by King David I. The oldest surviving building in Edinburgh. Every Friday, fresh wildflowers are placed inside."}},
+{video:cld('copy_B657BCCD-0A97-4614-914C-E084C169741F_of8dwv'),duration:16,label:'Chapter 7 — 2 Million Visitors',
+type:'popup',btn:' See the View',
+popup:{icon:' ',title:'What They See From The Top',
+text:"Arthur's Seat volcano, the Royal Mile, the Firth of Forth, and on a clear day — the Scottish Highlands 50 miles away."}},
+{video:cld('copy_00BB93BA-F91B-416A-B330-9326F6C99868_rujq8g'),duration:21,label:'Chapter 8 — 37 Generations',
+type:'counter',counter:{from:1,to:37,label:'Generations of Builders'}}
 ];
 
 const totalDur=shots.reduce((a,s)=>a+s.duration,0);
-let cur=0,elapsed=0;
-let timerInt=null,ctrInt=null,shotTimer=null,interactTimer=null;
-let popData=null,dotData=null,vidPaused=false;
-let storyStarted=false;
-let mindARStarted=false;
-
+let cur=0,elapsed=0,timerInt=null,ctrInt=null,shotTimer=null,interactTimer=null;
+let popData=null,dotData=null,videoPaused=false;
 const vid=document.getElementById('bg-vid');
 
-// BUTTON EVENTS
-document.getElementById('start-btn').addEventListener('click',goToGuide);
-document.getElementById('open-camera-btn').addEventListener('click',startMindAR);
+document.getElementById('start-btn').addEventListener('click',startStory);
+document.getElementById('tap-btn').addEventListener('click',function(){this.style.display='none';pauseVideo();showPopup();});
+document.getElementById('xray-btn').addEventListener('click',function(){this.style.display='none';pauseVideo();document.getElementById('xray-ov').style.display='block';document.getElementById('xray-lines').style.display='block';setTimeout(showPopup,600);});
+document.getElementById('pop-close').addEventListener('click',closeAndResume);
 document.getElementById('next-btn').addEventListener('click',onShotEnd);
+document.getElementById('dot1').addEventListener('click',()=>showDotPop(0));
+document.getElementById('dot2').addEventListener('click',()=>showDotPop(1));
+document.getElementById('dot3').addEventListener('click',()=>showDotPop(2));
 document.getElementById('shot9').addEventListener('click',revealTinText);
 document.getElementById('reward-btn').addEventListener('click',launchReward);
-document.getElementById('shop-btn').addEventListener('click',()=>window.open('https://www.etsy.com/shop/TaleCodeUK','_blank'));
-
-document.getElementById('tap-btn').addEventListener('click',function(){
- this.style.display='none';
- pauseVid();
- showPopup();
-});
-document.getElementById('xray-btn').addEventListener('click',function(){
- this.style.display='none';
- pauseVid();
- document.getElementById('xray-ov').style.display='block';
- document.getElementById('xray-lines').style.display='block';
- setTimeout(showPopup,600);
-});
-document.getElementById('pop-close').addEventListener('click',function(){
- document.getElementById('popup').classList.remove('show');
- document.getElementById('xray-ov').style.display='none';
- document.getElementById('xray-lines').style.display='none';
- resumeVid();
-});
-document.getElementById('dot1').addEventListener('click',()=>{showDotPop(0);pauseVid();});
-document.getElementById('dot2').addEventListener('click',()=>{showDotPop(1);pauseVid();});
-document.getElementById('dot3').addEventListener('click',()=>{showDotPop(2);pauseVid();});
+document.getElementById('shop-btn').addEventListener('click',()=>window.open('https://www.etsy.com/shop/TinsTale','_blank'));
 vid.addEventListener('ended',onShotEnd);
 
-// NAVIGATION
-function goToGuide(){
+function startStory(){
  document.getElementById('splash').style.display='none';
- document.getElementById('ar-guide').classList.add('show');
-}
-
-// START MINDAR
-async function startMindAR(){
- if(mindARStarted) return;
- mindARStarted=true;
-
- document.getElementById('ar-guide').classList.remove('show');
- document.getElementById('ar-guide').style.display='none';
- document.getElementById('scan-overlay').style.display='block';
-
- try{
- const mindarThree = new window.MINDAR.IMAGE.MindARThree({
- container: document.getElementById('mindar-container'),
- imageTargetSrc: './targets.mind', // your compiled target file
- maxTrack: 1,
- uiLoading: 'no',
- uiScanning: 'no',
- uiError: 'no',
- });
-
- document.getElementById('mindar-container').style.display='block';
-
- const {renderer, scene, camera} = mindarThree;
-
- // Create anchor for target index 0
- const anchor = mindarThree.addAnchor(0);
-
- // TARGET FOUND → Start story!
- anchor.group.visible = false;
- anchor.onTargetFound = function(){
- if(storyStarted) return;
- storyStarted = true;
-
- // Flash effect
- const flash = document.getElementById('detect-flash');
- flash.style.opacity='1';
- setTimeout(()=>{ flash.style.opacity='0'; }, 500);
-
- // Hide scan overlay and MindAR camera after brief delay
- setTimeout(()=>{
- document.getElementById('scan-overlay').style.display='none';
- document.getElementById('mindar-container').style.display='none';
- mindarThree.stop();
- document.getElementById('story-ui').style.display='block';
+ vid.style.display='block';
+ document.getElementById('prog').style.display='block';
+ document.getElementById('ch-label').style.display='block';
+ document.getElementById('timer-bar').style.display='block';
  loadShot(0);
- }, 700);
- };
-
- await mindarThree.start();
-
- } catch(err){
- console.warn('MindAR error:', err);
- // Fallback: go straight to story if camera fails
- document.getElementById('scan-overlay').style.display='none';
- document.getElementById('story-ui').style.display='block';
- loadShot(0);
- }
 }
 
-// PAUSE / RESUME
-function pauseVid(){
- if(!vidPaused){
- vidPaused=true;
- vid.pause();
- clearInterval(timerInt);
- clearTimeout(shotTimer);
- }
-}
-function resumeVid(){
- if(vidPaused){
- vidPaused=false;
- vid.play().catch(()=>{});
- const remaining=shots[cur].duration-Math.floor(vid.currentTime);
- if(remaining>0){
- resumeTimer(remaining);
- shotTimer=setTimeout(onShotEnd,(remaining+3)*1000);
- }
- }
-}
-
-// LOAD SHOT
 function loadShot(i){
  if(i>=shots.length){showShot9();return;}
- cur=i; vidPaused=false;
- const s=shots[i];
-
+ cur=i;const s=shots[i];videoPaused=false;
  document.getElementById('prog-fill').style.width=((elapsed/totalDur)*100)+'%';
  document.getElementById('ch-label').textContent=' '+s.label;
  hideAll();
-
- vid.src=s.video;
- vid.muted=false;
+ vid.src=s.video;vid.load();
  const p=vid.play();
- if(p!==undefined) p.catch(()=>{ vid.muted=true; vid.play().catch(()=>{}); });
-
+ if(p!==undefined)p.catch(()=>{vid.muted=true;vid.play().catch(()=>{});});
  startTimer(s.duration);
  clearTimeout(interactTimer);
- interactTimer=setTimeout(()=>showInteraction(s),s.interactAt*1000);
- setTimeout(()=>{ if(cur===i) document.getElementById('next-btn').style.display='block'; },s.duration*800);
+ interactTimer=setTimeout(()=>showInteraction(s),3000);
+ setTimeout(()=>{if(cur===i)document.getElementById('next-btn').style.display='block';},s.duration*800);
  clearTimeout(shotTimer);
- shotTimer=setTimeout(onShotEnd,(s.duration+5)*1000);
+ shotTimer=setTimeout(onShotEnd,(s.duration+8)*1000);
 }
 
 function onShotEnd(){
  clearInterval(timerInt);clearInterval(ctrInt);
  clearTimeout(shotTimer);clearTimeout(interactTimer);
- vidPaused=false; vid.pause();
- elapsed+=shots[cur].duration;
- hideAll(); loadShot(cur+1);
+ vid.pause();elapsed+=shots[cur].duration;
+ videoPaused=false;hideAll();loadShot(cur+1);
 }
 
-// INTERACTIONS
-function showInteraction(s){
- if(s.type==='popup'){
- popData=s.popup;
- const b=document.getElementById('tap-btn');
- b.textContent=s.btn||' Discover More';
- b.style.display='block';
- }else if(s.type==='xray'){
- popData=s.popup;
- document.getElementById('xray-btn').style.display='block';
- }else if(s.type==='dots'){
- dotData=s.dots;
- ['dot1','dot2','dot3'].forEach(id=>{document.getElementById(id).style.display='flex';});
- }else if(s.type==='counter'){
- runCounter(s.counter);
- }
+function pauseVideo(){if(!videoPaused){videoPaused=true;vid.pause();clearInterval(timerInt);clearTimeout(shotTimer);}}
+function resumeVideo(){
+ if(videoPaused){videoPaused=false;vid.play().catch(()=>{});
+ const rem=Math.max(shots[cur].duration-Math.floor(vid.currentTime),2);
+ startTimerFromRemaining(rem);clearTimeout(shotTimer);shotTimer=setTimeout(onShotEnd,(rem+3)*1000);}
 }
-
+function closeAndResume(){
+ document.getElementById('popup').classList.remove('show');
+ document.getElementById('xray-ov').style.display='none';
+ document.getElementById('xray-lines').style.display='none';
+ resumeVideo();
+}
 function showPopup(){
  if(!popData)return;
  document.getElementById('pop-icon').textContent=popData.icon;
@@ -457,35 +280,34 @@ function showPopup(){
  document.getElementById('pop-text').textContent=popData.text;
  document.getElementById('popup').classList.add('show');
 }
-function showDotPop(i){
- if(!dotData)return;
- popData={icon:dotData[i].icon,title:dotData[i].title,text:dotData[i].text};
- showPopup();
+function showDotPop(i){if(!dotData)return;popData={icon:dotData[i].icon,title:dotData[i].title,text:dotData[i].text};showPopup();}
+function showInteraction(s){
+ if(s.type==='popup'){popData=s.popup;const b=document.getElementById('tap-btn');b.textContent=s.btn||' Discover';b.style.display='block';}
+ else if(s.type==='xray'){popData=s.popup;document.getElementById('xray-btn').style.display='block';}
+ else if(s.type==='dots'){dotData=s.dots;['dot1','dot2','dot3'].forEach(id=>{document.getElementById(id).style.display='flex';});pauseVideo();}
+ else if(s.type==='counter'){runCounter(s.counter);}
 }
 function runCounter(c){
  clearInterval(ctrInt);
- document.getElementById('ctr-wrap').style.display='block';
+ const w=document.getElementById('ctr-wrap');w.style.display='block';
  document.getElementById('ctr-lbl').textContent=c.label;
- let v=c.from; document.getElementById('ctr-num').textContent=v;
+ let v=c.from;document.getElementById('ctr-num').textContent=v;
  const step=Math.ceil((c.to-c.from)/60);
- ctrInt=setInterval(()=>{ v=Math.min(v+step,c.to); document.getElementById('ctr-num').textContent=v; if(v>=c.to)clearInterval(ctrInt); },50);
+ ctrInt=setInterval(()=>{v=Math.min(v+step,c.to);document.getElementById('ctr-num').textContent=v;if(v>=c.to)clearInterval(ctrInt);},50);
 }
 function startTimer(dur){
- clearInterval(timerInt);
- const f=document.getElementById('timer-fill');
+ clearInterval(timerInt);const f=document.getElementById('timer-fill');
  f.style.transition='none';f.style.width='100%';
  setTimeout(()=>{f.style.transition=`width ${dur}s linear`;f.style.width='0%';},80);
  let t=0;
- timerInt=setInterval(()=>{ t++; document.getElementById('prog-fill').style.width=Math.min(((elapsed+t)/totalDur)*100,96)+'%'; if(t>=dur)clearInterval(timerInt); },1000);
+ timerInt=setInterval(()=>{t++;document.getElementById('prog-fill').style.width=Math.min(((elapsed+t)/totalDur)*100,96)+'%';if(t>=dur)clearInterval(timerInt);},1000);
 }
-function resumeTimer(remaining){
- clearInterval(timerInt);
- const f=document.getElementById('timer-fill');
- const cp=parseFloat(f.style.width)||0;
- f.style.transition='none';f.style.width=cp+'%';
- setTimeout(()=>{f.style.transition=`width ${remaining}s linear`;f.style.width='0%';},80);
- let t=0; const done=shots[cur].duration-remaining;
- timerInt=setInterval(()=>{ t++; document.getElementById('prog-fill').style.width=Math.min(((elapsed+done+t)/totalDur)*100,96)+'%'; if(t>=remaining)clearInterval(timerInt); },1000);
+function startTimerFromRemaining(rem){
+ clearInterval(timerInt);const f=document.getElementById('timer-fill');
+ const cp=parseFloat(f.style.width)||0;f.style.transition='none';f.style.width=cp+'%';
+ setTimeout(()=>{f.style.transition=`width ${rem}s linear`;f.style.width='0%';},80);
+ const done=shots[cur].duration-rem;let t=0;
+ timerInt=setInterval(()=>{t++;document.getElementById('prog-fill').style.width=Math.min(((elapsed+done+t)/totalDur)*100,96)+'%';if(t>=rem)clearInterval(timerInt);},1000);
 }
 function hideAll(){
  ['tap-btn','xray-btn','next-btn'].forEach(id=>{document.getElementById(id).style.display='none';});
@@ -496,11 +318,8 @@ function hideAll(){
  document.getElementById('popup').classList.remove('show');
  clearInterval(ctrInt);
 }
-
-// SHOT 9 & REWARD
 function showShot9(){
- document.getElementById('story-ui').style.display='none';
- vid.pause();vid.src='';
+ vid.pause();vid.src='';vid.style.display='none';
  document.getElementById('prog-fill').style.width='96%';
  document.getElementById('shot9').classList.add('show');
 }
@@ -525,6 +344,7 @@ function doConfetti(){
  }
 }
 </script>
-
 </body>
 </html>
+HTMLEOF
+echo "Done!"
