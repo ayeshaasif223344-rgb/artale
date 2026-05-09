@@ -5,7 +5,13 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
 <title>TaleCode UK — Edinburgh Castle</title>
-<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image.prod.js"></script>
+
+<!-- Three.js required by MindAR -->
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.136.0/build/three.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js"></script>
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 body{background:#000;font-family:Georgia,serif;overflow:hidden;height:100vh;width:100vw;color:#fff;}
@@ -16,7 +22,7 @@ body{background:#000;font-family:Georgia,serif;overflow:hidden;height:100vh;widt
 @keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
 @keyframes glow{0%,100%{box-shadow:0 0 20px rgba(200,169,81,.4)}50%{box-shadow:0 0 60px rgba(200,169,81,1)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes scanMove{0%{top:20%}100%{top:78%}}
+@keyframes scanMove{0%{top:15%}100%{top:75%}}
 
 /* SPLASH */
 #splash{position:fixed;inset:0;z-index:1000;background:linear-gradient(160deg,#0d1b3e,#1a0a0a);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;}
@@ -38,41 +44,50 @@ body{background:#000;font-family:Georgia,serif;overflow:hidden;height:100vh;widt
 .gs-txt{font-size:14px;color:#ccc;line-height:1.6;}
 .guide-btn{background:linear-gradient(135deg,#c8a951,#a07830);color:#0d1b3e;border:none;padding:15px 42px;font-size:16px;font-weight:700;border-radius:50px;cursor:pointer;letter-spacing:2px;animation:glow 2s ease-in-out infinite;-webkit-appearance:none;}
 
-/* MindAR */
-#mindar-container{display:none;position:fixed;inset:0;z-index:1;}
+/* CAMERA SCAN SCREEN — stays visible until marker found */
+#camera-screen{
+ display:none;position:fixed;inset:0;z-index:10;
+ background:#000;
+}
+/* MindAR renders its own canvas inside here */
+#mindar-container{
+ position:absolute;inset:0;
+ width:100%;height:100%;
+}
 
-/* SCAN OVERLAY */
-#scan-overlay{display:none;position:fixed;inset:0;z-index:2;pointer-events:none;}
-.scan-corner{position:absolute;width:70px;height:70px;border-color:#c8a951;border-style:solid;opacity:.8;}
+/* Scan UI overlay ON TOP of camera */
+#scan-ui{
+ position:absolute;inset:0;z-index:20;
+ pointer-events:none;
+}
+.scan-corner{position:absolute;width:70px;height:70px;border-color:#c8a951;border-style:solid;opacity:.9;}
 .sc-tl{top:18%;left:8%;border-width:3px 0 0 3px;}
 .sc-tr{top:18%;right:8%;border-width:3px 3px 0 0;}
 .sc-bl{bottom:18%;left:8%;border-width:0 0 3px 3px;}
 .sc-br{bottom:18%;right:8%;border-width:0 3px 3px 0;}
 .scan-line{position:absolute;left:8%;right:8%;height:2px;background:linear-gradient(90deg,transparent,#c8a951,transparent);animation:scanMove 2.5s ease-in-out infinite;}
-#scan-hint{position:absolute;bottom:10%;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.8);border:1px solid rgba(200,169,81,.4);border-radius:20px;padding:10px 24px;color:#c8a951;font-size:12px;letter-spacing:2px;white-space:nowrap;}
+#scan-hint{
+ position:absolute;bottom:10%;left:50%;transform:translateX(-50%);
+ background:rgba(0,0,0,.85);border:1px solid rgba(200,169,81,.5);
+ border-radius:20px;padding:12px 24px;color:#c8a951;
+ font-size:12px;letter-spacing:2px;white-space:nowrap;text-align:center;
+}
+#scan-status{
+ position:absolute;top:8%;left:50%;transform:translateX(-50%);
+ background:rgba(0,0,0,.8);border:1px solid rgba(200,169,81,.3);
+ border-radius:20px;padding:8px 20px;color:#888;
+ font-size:11px;letter-spacing:2px;white-space:nowrap;
+}
 
 /* DETECT FLASH */
-#detect-flash{position:fixed;inset:0;z-index:3;background:rgba(200,169,81,.3);pointer-events:none;opacity:0;transition:opacity .3s;}
+#detect-flash{position:fixed;inset:0;z-index:99;background:rgba(200,169,81,.4);pointer-events:none;opacity:0;transition:opacity .25s;z-index:99;}
 
-/* STORY UI */
+/* STORY — hidden until marker found */
 #story-ui{display:none;position:fixed;inset:0;z-index:5;background:#000;}
 
-/* VIDEO — contain so full video shows, no zoom */
-#vid-wrapper{
-position:fixed;inset:0;
-display:flex;align-items:center;justify-content:center;
-background:#000;
-z-index:1;
-}
-#bg-vid{
-width:100%;
-height:100%;
-object-fit:contain; /* poori video dikhe, zoom nahi */
-display:block;
-max-width:100vw;
-max-height:100vh;
-}
-
+/* VIDEO — contain, no zoom */
+#vid-wrapper{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000;z-index:1;}
+#bg-vid{width:100%;height:100%;object-fit:contain;display:block;max-width:100vw;max-height:100vh;}
 .bg-ov{position:fixed;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,.2) 0%,transparent 20%,transparent 60%,rgba(0,0,0,.7) 100%);}
 
 /* PROGRESS */
@@ -120,7 +135,6 @@ max-height:100vh;
 .tin-wrap{width:min(72vw,300px);height:min(72vw,300px);animation:floatY 4s ease-in-out infinite;border-radius:50%;box-shadow:0 0 70px rgba(200,169,81,.5);border:3px solid rgba(200,169,81,.4);overflow:hidden;background:#1a2a4a;display:flex;align-items:center;justify-content:center;}
 .tin-wrap img{width:100%;height:100%;object-fit:cover;}
 .tin-hint{margin-top:20px;font-size:14px;color:#c8a951;letter-spacing:2px;animation:glow 2s ease-in-out infinite;}
-
 #shot9-txt{display:none;position:fixed;inset:0;z-index:55;background:rgba(0,0,0,.94);flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px 24px;}
 #shot9-txt.show{display:flex;animation:fadeIn .6s ease;}
 .s9-icon{font-size:52px;margin-bottom:14px;animation:floatY 3s ease-in-out infinite;}
@@ -174,29 +188,29 @@ max-height:100vh;
  <div class="guide-step"><div class="gs-num">1</div><div class="gs-txt">Allow camera access when asked</div></div>
  <div class="guide-step"><div class="gs-num">2</div><div class="gs-txt">Hold your <strong style="color:#c8a951">TINSTALE tin</strong> in front of you</div></div>
  <div class="guide-step"><div class="gs-num">3</div><div class="gs-txt">Point camera at the <strong style="color:#c8a951">Edinburgh Castle</strong> image on the lid</div></div>
- <div class="guide-step"><div class="gs-num">4</div><div class="gs-txt">Hold steady — your story begins! </div></div>
+ <div class="guide-step"><div class="gs-num">4</div><div class="gs-txt">Hold steady 2 seconds — story begins! </div></div>
  </div>
  <button class="guide-btn" id="open-camera-btn"> Open Camera</button>
 </div>
 
-<!-- MindAR container -->
+<!-- CAMERA SCREEN — visible while waiting for marker -->
 
-<div id="mindar-container"></div>
-
-<!-- SCAN OVERLAY -->
-
-<div id="scan-overlay">
+<div id="camera-screen">
+ <div id="mindar-container"></div>
+ <div id="scan-ui">
  <div class="scan-corner sc-tl"></div>
  <div class="scan-corner sc-tr"></div>
  <div class="scan-corner sc-bl"></div>
  <div class="scan-corner sc-br"></div>
  <div class="scan-line"></div>
+ <div id="scan-status"> Loading AR...</div>
  <div id="scan-hint"> POINT AT YOUR TINSTALE TIN LID</div>
+ </div>
 </div>
 
 <div id="detect-flash"></div>
 
-<!-- STORY UI -->
+<!-- STORY UI — only shown after marker detected -->
 
 <div id="story-ui">
  <div id="vid-wrapper">
@@ -236,7 +250,6 @@ max-height:100vh;
  </div>
  <div class="tin-hint"> Tap to reveal your story </div>
 </div>
-
 <div id="shot9-txt">
  <div class="s9-icon"> </div>
  <h2 class="s9-title">Your Heritage.<br/>Your Story.</h2>
@@ -292,12 +305,15 @@ const totalDur=shots.reduce((a,s)=>a+s.duration,0);
 let cur=0,elapsed=0;
 let timerInt=null,ctrInt=null,shotTimer=null,interactTimer=null;
 let popData=null,dotData=null,vidPaused=false;
-let storyStarted=false,mindARStarted=false;
+let storyStarted=false;
 
 const vid=document.getElementById('bg-vid');
 
 // EVENTS
-document.getElementById('start-btn').addEventListener('click',goToGuide);
+document.getElementById('start-btn').addEventListener('click',()=>{
+ document.getElementById('splash').style.display='none';
+ document.getElementById('ar-guide').classList.add('show');
+});
 document.getElementById('open-camera-btn').addEventListener('click',startMindAR);
 document.getElementById('next-btn').addEventListener('click',onShotEnd);
 document.getElementById('shot9').addEventListener('click',revealTinText);
@@ -323,18 +339,14 @@ document.getElementById('dot2').addEventListener('click',()=>{pauseVid();showDot
 document.getElementById('dot3').addEventListener('click',()=>{pauseVid();showDotPop(2);});
 vid.addEventListener('ended',onShotEnd);
 
-function goToGuide(){
- document.getElementById('splash').style.display='none';
- document.getElementById('ar-guide').classList.add('show');
-}
-
-// ── MindAR START ──
+// ══════════════════════════════════════
+// MINDAR — strict: story ONLY on marker found
+// ══════════════════════════════════════
 async function startMindAR(){
- if(mindARStarted) return;
- mindARStarted=true;
  document.getElementById('ar-guide').classList.remove('show');
  document.getElementById('ar-guide').style.display='none';
- document.getElementById('scan-overlay').style.display='block';
+ document.getElementById('camera-screen').style.display='block';
+ document.getElementById('scan-status').textContent=' Loading AR...';
 
  try{
  const mindarThree = new window.MINDAR.IMAGE.MindARThree({
@@ -344,63 +356,56 @@ async function startMindAR(){
  uiLoading: 'no',
  uiScanning: 'no',
  uiError: 'no',
+ filterMinCF: 0.001,
+ filterBeta: 1000,
+ missTolerance: 5,
+ warmupTolerance: 3,
  });
 
- document.getElementById('mindar-container').style.cssText=
- 'display:block;position:fixed;inset:0;z-index:1;';
-
- const {renderer,scene,camera} = mindarThree;
+ const {renderer, scene, camera} = mindarThree;
  const anchor = mindarThree.addAnchor(0);
 
- // TARGET FOUND
+ // ONLY this triggers story — no fallback, no timeout
  anchor.onTargetFound = function(){
  if(storyStarted) return;
- storyStarted=true;
+ storyStarted = true;
 
- const flash=document.getElementById('detect-flash');
- flash.style.opacity='1';
- setTimeout(()=>{ flash.style.opacity='0'; },500);
+ // Gold flash
+ const flash = document.getElementById('detect-flash');
+ flash.style.opacity = '1';
+ setTimeout(()=>{ flash.style.opacity='0'; }, 400);
 
- setTimeout(()=>{
- document.getElementById('scan-overlay').style.display='none';
- // Stop MindAR and hide camera
- mindarThree.stop();
- document.getElementById('mindar-container').style.display='none';
- // Start story
+ // Stop camera, show story
+ setTimeout(async()=>{
+ await mindarThree.stop();
+ document.getElementById('camera-screen').style.display='none';
  document.getElementById('story-ui').style.display='block';
  loadShot(0);
- },700);
+ }, 600);
  };
 
  await mindarThree.start();
+ // Update status once AR is running
+ document.getElementById('scan-status').textContent=' AR Ready — point at tin';
 
  }catch(err){
- console.warn('MindAR error:',err);
- // Fallback: skip straight to story
- document.getElementById('scan-overlay').style.display='none';
- document.getElementById('story-ui').style.display='block';
- loadShot(0);
+ // Show error — do NOT start story
+ document.getElementById('scan-status').textContent=' Camera error — please reload';
+ document.getElementById('scan-hint').textContent='Please allow camera and reload page';
+ console.error('MindAR error:', err);
  }
 }
 
 // PAUSE / RESUME
 function pauseVid(){
- if(!vidPaused){
- vidPaused=true;
- vid.pause();
- clearInterval(timerInt);
- clearTimeout(shotTimer);
- }
+ if(!vidPaused){ vidPaused=true; vid.pause(); clearInterval(timerInt); clearTimeout(shotTimer); }
 }
 function resumeVid(){
  if(vidPaused){
  vidPaused=false;
  vid.play().catch(()=>{});
  const remaining=shots[cur].duration-Math.floor(vid.currentTime);
- if(remaining>0){
- resumeTimer(remaining);
- shotTimer=setTimeout(onShotEnd,(remaining+3)*1000);
- }
+ if(remaining>0){ resumeTimer(remaining); shotTimer=setTimeout(onShotEnd,(remaining+3)*1000); }
  }
 }
 
@@ -412,8 +417,7 @@ function loadShot(i){
  document.getElementById('prog-fill').style.width=((elapsed/totalDur)*100)+'%';
  document.getElementById('ch-label').textContent=' '+s.label;
  hideAll();
- vid.src=s.video;
- vid.muted=false;
+ vid.src=s.video; vid.muted=false;
  const p=vid.play();
  if(p!==undefined) p.catch(()=>{ vid.muted=true; vid.play().catch(()=>{}); });
  startTimer(s.duration);
@@ -448,7 +452,6 @@ function showInteraction(s){
  runCounter(s.counter);
  }
 }
-
 function showPopup(){
  if(!popData)return;
  document.getElementById('pop-icon').textContent=popData.icon;
@@ -495,7 +498,6 @@ function hideAll(){
  document.getElementById('popup').classList.remove('show');
  clearInterval(ctrInt);
 }
-
 function showShot9(){
  document.getElementById('story-ui').style.display='none';
  vid.pause();vid.src='';
